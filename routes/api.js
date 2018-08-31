@@ -23,6 +23,7 @@ var commands = [
 //@TODO: enable https
 //@TODO: generate JWT token
 //@TODO: add JWT middleware on rpc route
+//@TODO: write the new auth details to disk
 
 var settings = config.get('client');
 
