@@ -32,8 +32,9 @@ router.get('/', function(req, res, next) {
 
 router.post('/rpc', function(req, res, next) {
 
-  //check if logged in
-
+  //check if logged in.
+  //JWT.
+  //BCrypt hashed password on disk.
 
   //check if command on allowed list
   if (!req.body || !req.body.command || commands.indexOf(req.body.command) == -1){
