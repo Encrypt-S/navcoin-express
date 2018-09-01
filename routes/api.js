@@ -3,7 +3,7 @@ var router = express.Router();
 var lodash = require('lodash');
 var config = require('config');
 var Client = require('bitcoin-core');
-var jwt = require('express-jwt');
+var jwt = require('jsonwebtoken');
 var fs = require('fs');
 
 var commands = [
@@ -21,8 +21,6 @@ var commands = [
 //@TODO: remove data.body being parsed back
 //@TODO: hash the username and password
 //@TODO: enable https
-//@TODO: generate JWT token
-//@TODO: add JWT middleware on rpc route
 //@TODO: write the new auth details to disk
 
 var settings = config.get('client');
@@ -34,12 +32,61 @@ var navClient = new Client({
   host: settings.navCoin.host,
 })
 
+router.use(function(req, res, next) {
+
+  //skip token middleware on auth attempt
+  if(req.originalUrl == '/api/auth'){
+    next();
+    return
+  }
+
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    var auth = fs.readFileSync("./config/auth.json");
+    var authJson = JSON.parse(auth);
+    // verifies secret and checks exp
+    jwt.verify(token, authJson.secret, function(err, decoded) {
+      if (err) {
+        var response = {
+          type: 'ERROR',
+          code: 'JWT_001',
+          message: 'Invalid Token',
+          data: req.body,
+        }
+        res.send(JSON.stringify(response));
+        return
+      } else {
+        // if everything is good, save to request for use in other routes
+        console.log('TOKEN AUTHENTICATED');
+        next();
+        return
+      }
+    });
+
+  } else {
+
+    var response = {
+      type: 'ERROR',
+      code: 'JWT_002',
+      message: 'No Token Provided',
+      data: req.body,
+    }
+    res.send(JSON.stringify(response));
+    return
+
+  }
+});
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('Available endpoints [auth, rpc]');
 });
 
 router.post('/auth', function(req, res, next) {
+
+  //check username and password
+  var auth = fs.readFileSync("./config/auth.json");
+  var authJson = JSON.parse(auth);
 
   if (!req.body || !req.body.username || !req.body.password){
     var response = {
@@ -52,12 +99,6 @@ router.post('/auth', function(req, res, next) {
     return
   }
 
-  //check username and password
-  var auth = fs.readFileSync("./config/auth.json");
-  var authJson = JSON.parse(auth);
-
-  console.log('authJson', authJson);
-
   if (authJson.username != req.body.username || authJson.password != req.body.password) {
     var response = {
       type: 'ERROR',
@@ -69,9 +110,13 @@ router.post('/auth', function(req, res, next) {
     return
   }
 
-  var data = {
-    jwt: "test_token"
+  const data = {
+    user: authJson.username,
   }
+
+  var token = jwt.sign(data, authJson.secret, {
+    expiresIn: 60*60*24,
+  });
 
   //check password is valid
   var response = {
@@ -79,17 +124,15 @@ router.post('/auth', function(req, res, next) {
     code: 'AUTH_002',
     message: 'Successful Login',
     data: data,
+    token: token,
   }
+
   res.send(JSON.stringify(response));
   return
 
 });
 
 router.post('/rpc', function(req, res, next) {
-
-  //check if logged in.
-  //JWT.
-  //BCrypt hashed password on disk.
 
   //check if command on allowed list
   if (!req.body || !req.body.command || commands.indexOf(req.body.command) == -1){
