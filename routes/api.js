@@ -17,6 +17,7 @@ const commands = [
   'encryptwallet',
   'walletpassphrasechange',
   'backupwallet',
+  'getstakereport',
 ];
 
 //@TODO: remove data.body being parsed back
