@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-// var lodash = require('lodash');
-var config = require('config');
-var Client = require('bitcoin-core');
-var jwt = require('jsonwebtoken');
-var fs = require('fs');
+const express = require('express');
+const router = express.Router();
+// const lodash = require('lodash');
+const config = require('config');
+const Client = require('bitcoin-core');
+const jwt = require('jsonwebtoken');
+const fs = require('fs');
 
 const RPC_COMMANDS = [
   '￼getaddressbalance', 
@@ -137,7 +137,7 @@ const RPC_COMMANDS = [
 const settings = config.get('client');
 
 console.log(settings)
-var navClient = new Client({
+const navClient = new Client({
   username: settings.navCoin.user,
   password: settings.navCoin.pass,
   port: settings.navCoin.port,
@@ -152,14 +152,14 @@ router.use(function(req, res, next) {
     return
   }
 
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+  const token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
-    var auth = fs.readFileSync("./config/auth.json");
-    var authJson = JSON.parse(auth);
+    const auth = fs.readFileSync("./config/auth.json");
+    const authJson = JSON.parse(auth);
     // verifies secret and checks exp
     jwt.verify(token, authJson.secret, function(err, decoded) {
       if (err) {
-        var response = {
+        const response = {
           type: 'ERROR',
           code: 'JWT_001',
           message: 'Invalid Token',
@@ -177,7 +177,7 @@ router.use(function(req, res, next) {
 
   } else {
 
-    var response = {
+    const response = {
       type: 'ERROR',
       code: 'JWT_002',
       message: 'No Token Provided',
@@ -197,11 +197,11 @@ router.get('/', function(req, res, next) {
 router.post('/auth', function(req, res, next) {
 
   //check username and password
-  var auth = fs.readFileSync("./config/auth.json");
-  var authJson = JSON.parse(auth);
+  const auth = fs.readFileSync("./config/auth.json");
+  const authJson = JSON.parse(auth);
 
   if (!req.body || !req.body.username || !req.body.password){
-    var response = {
+    const response = {
       type: 'ERROR',
       code: 'AUTH_001',
       message: 'Invalid Request',
@@ -212,7 +212,7 @@ router.post('/auth', function(req, res, next) {
   }
 
   if (authJson.username != req.body.username || authJson.password != req.body.password) {
-    var response = {
+    const response = {
       type: 'ERROR',
       code: 'AUTH_002',
       message: 'Invalid Username or Password',
@@ -231,7 +231,7 @@ router.post('/auth', function(req, res, next) {
   });
 
   //check password is valid
-  var response = {
+  const response = {
     type: 'SUCCESS',
     code: 'AUTH_002',
     message: 'Successful Login',
@@ -248,7 +248,7 @@ router.post('/rpc', function(req, res, next) {
   console.log(`'/rpc called: ${req.body.command}`)
   //check if command on allowed list
   if (!req.body || !req.body.command || RPC_COMMANDS.indexOf(req.body.command) == -1){
-    var response = {
+    const response = {
       type: 'ERROR',
       code: 'RPC_001',
       message: 'Invalid Request',
@@ -258,7 +258,7 @@ router.post('/rpc', function(req, res, next) {
     return
   }
 
-  var args = [req.body.command];
+  let args = [req.body.command];
 
   //add params if they exist
   if (req.body.params) args = args.concat(req.body.params);
@@ -266,7 +266,7 @@ router.post('/rpc', function(req, res, next) {
   console.log('Args:', args)
   //forward request to the navcoin cli
   navClient.command(...args).then((data) => {
-    var response = {
+    const response = {
       type: 'SUCCESS',
       code: 'RPC_002',
       message: 'Successful Request',
@@ -276,7 +276,7 @@ router.post('/rpc', function(req, res, next) {
     res.send(JSON.stringify(response));
     return
   }).catch((err) => {
-    var response = {
+    const response = {
       type: 'ERROR',
       code: 'RPC_003',
       message: 'RPC Error',
@@ -287,4 +287,58 @@ router.post('/rpc', function(req, res, next) {
   });
 });
 
+router.post('/walletoverview', (req, res, next) => {
+  console.log(`/walletoverview called`);
+  // walletVersion: String; YES
+  // isSyncing: Boolean;
+  // isStaking: Boolean; YES
+  // isLocked: Boolean;
+  // currentBlock: number; YES
+  // highestKnownBlock: number; YES
+  // walletChain: String; YES
+
+  const batch = [
+    { method: 'getblockchaininfo' },
+    { method: 'getstakinginfo'},
+    { method: 'getinfo' },
+  ]
+  navClient.command(batch).then((responses) => {
+    console.log(responses)
+
+    const getBlockchainInfoData = responses[0];
+    const getStakingInfoData = responses[1];
+    const getInfoData = responses[2];
+
+    const response = {
+      type: 'SUCCESS',
+      code: 'RPC_002',
+      message: 'Successful Request',
+      data: {
+        walletVersion: getInfoData.version,
+        walletChain: getBlockchainInfoData.chain,
+        isLocked: (getInfoData.unlocked_until > 0),
+        isStaking: getStakingInfoData.staking,
+        currentBlock: getBlockchainInfoData.blocks,
+        highestKnownBlock: getBlockchainInfoData.blocks, //TODO Verify this is correct
+        isSyncing: (this.currentBlock < this.highestKnownBlock ), //TODO Verify this is correct
+      },
+    }
+    console.log('success')
+    res.send(JSON.stringify(response));
+    return
+
+  }).catch((err) => {
+    const response = {
+      type: 'ERROR',
+      code: 'RPC_003',
+      message: 'RPC Error',
+      data: {'error': err.code, 'message': err.message},
+    }
+    res.send(JSON.stringify(response));
+    return
+  });
+
+});
+
 module.exports = router;
+
