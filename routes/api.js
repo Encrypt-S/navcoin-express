@@ -177,4 +177,30 @@ router.post('/rpc', function(req, res, next) {
   });
 });
 
+router.post('/ui-password', function(req, res, next) {
+
+  //check if command on allowed list
+  if (!req.body || !req.body.username || !req.body.password){
+    var response = {
+      type: 'ERROR',
+      code: 'UIPASS_001',
+      message: 'Invalid Request',
+      data: req.body,
+    }
+    res.send(JSON.stringify(response));
+    return
+  }
+
+  //@TODO hash the password to the file
+
+  var response = {
+    type: 'SUCCESS',
+    code: 'UIPASS_002',
+    message: 'Successful Request',
+    data: "Password Updated",
+  }
+  res.send(JSON.stringify(response));
+  return
+});
+
 module.exports = router;
