@@ -1,10 +1,10 @@
 {
   "client": {
     "navCoin": {
-      "user": "RPC_USERNAME",
-      "pass": "RPC_PASSWORD",
+      "user": "nav",
+      "pass": "nav",
       "ip": "127.0.0.1",
-      "port": "44444"
+      "port": "44446"
     }
   },
   "ssl": {

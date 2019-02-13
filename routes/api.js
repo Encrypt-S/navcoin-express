@@ -1,14 +1,15 @@
 var express = require('express');
 var router = express.Router();
-var lodash = require('lodash');
+// var lodash = require('lodash');
 var config = require('config');
 var Client = require('bitcoin-core');
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
 
-var commands = [
+const commands = [
   'getinfo',
   'getbalance',
+  'getwalletinfo',
   'walletpassphrase',
   'sendtoaddress',
   'listtransactions',
@@ -23,8 +24,9 @@ var commands = [
 //@TODO: enable https
 //@TODO: write the new auth details to disk
 
-var settings = config.get('client');
+const settings = config.get('client');
 
+console.log(settings)
 var navClient = new Client({
   username: settings.navCoin.user,
   password: settings.navCoin.pass,
@@ -114,7 +116,7 @@ router.post('/auth', function(req, res, next) {
     user: authJson.username,
   }
 
-  var token = jwt.sign(data, authJson.secret, {
+  const token = jwt.sign(data, authJson.secret, {
     expiresIn: 60*60*24,
   });
 
@@ -133,7 +135,7 @@ router.post('/auth', function(req, res, next) {
 });
 
 router.post('/rpc', function(req, res, next) {
-
+  console.log(`'/rpc called: ${req.body.command}`)
   //check if command on allowed list
   if (!req.body || !req.body.command || commands.indexOf(req.body.command) == -1){
     var response = {
@@ -150,7 +152,8 @@ router.post('/rpc', function(req, res, next) {
 
   //add params if they exist
   if (req.body.params) args = args.concat(req.body.params);
-
+  
+  console.log('Args:', args)
   //forward request to the navcoin cli
   navClient.command(...args).then((data) => {
     var response = {
@@ -159,6 +162,7 @@ router.post('/rpc', function(req, res, next) {
       message: 'Successful Request',
       data: data,
     }
+    console.log('success')
     res.send(JSON.stringify(response));
     return
   }).catch((err) => {
