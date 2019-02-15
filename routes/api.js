@@ -5,6 +5,7 @@ var config = require('config');
 var Client = require('bitcoin-core');
 var jwt = require('jsonwebtoken');
 var fs = require('fs');
+const bcrypt = require('bcrypt');
 
 var commands = [
   'getinfo',
@@ -19,9 +20,6 @@ var commands = [
 ];
 
 //@TODO: remove data.body being parsed back
-//@TODO: hash the username and password
-//@TODO: enable https
-//@TODO: write the new auth details to disk
 
 var settings = config.get('client');
 
@@ -42,27 +40,36 @@ router.use(function(req, res, next) {
 
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
-    var auth = fs.readFileSync("./config/auth.json");
-    var authJson = JSON.parse(auth);
-    // verifies secret and checks exp
-    jwt.verify(token, authJson.secret, function(err, decoded) {
+    fs.readFile('./config/auth.json', function(err, auth){
       if (err) {
         var response = {
           type: 'ERROR',
           code: 'JWT_001',
-          message: 'Invalid Token',
+          message: 'Failed to read auth file from disk',
           data: req.body,
         }
         res.send(JSON.stringify(response));
         return
-      } else {
+      }
+      var authJson = JSON.parse(auth);
+      // verifies secret and checks exp
+      jwt.verify(token, authJson.secret, function(err, decoded) {
+        if (err) {
+          var response = {
+            type: 'ERROR',
+            code: 'JWT_002',
+            message: 'Invalid Token',
+            data: req.body,
+          }
+          res.send(JSON.stringify(response));
+          return
+        }
         // if everything is good, save to request for use in other routes
         console.log('TOKEN AUTHENTICATED');
         next();
         return
-      }
+      });
     });
-
   } else {
 
     var response = {
@@ -85,7 +92,7 @@ router.get('/', function(req, res, next) {
 router.post('/auth', function(req, res, next) {
 
   //check username and password
-  var auth = fs.readFileSync("./config/auth.json");
+  var auth = fs.readFileSync('./config/auth.json');
   var authJson = JSON.parse(auth);
 
   if (!req.body || !req.body.username || !req.body.password){
@@ -99,7 +106,7 @@ router.post('/auth', function(req, res, next) {
     return
   }
 
-  if (authJson.username != req.body.username || authJson.password != req.body.password) {
+  if (!bcrypt.compareSync(req.body.username, authJson.username) || !bcrypt.compareSync(req.body.password, authJson.password)) {
     var response = {
       type: 'ERROR',
       code: 'AUTH_002',
@@ -111,7 +118,7 @@ router.post('/auth', function(req, res, next) {
   }
 
   const data = {
-    user: authJson.username,
+    user: req.body.username,
   }
 
   var token = jwt.sign(data, authJson.secret, {
@@ -176,7 +183,7 @@ router.post('/rpc', function(req, res, next) {
 router.post('/ui-password', function(req, res, next) {
 
   //check if command on allowed list
-  if (!req.body || !req.body.username || !req.body.password){
+  if (!req.body || !req.body.username || !req.body.password || !req.body.currentUsername || !req.body.currentPassword){
     var response = {
       type: 'ERROR',
       code: 'UIPASS_001',
@@ -187,16 +194,56 @@ router.post('/ui-password', function(req, res, next) {
     return
   }
 
-  //@TODO hash the password to the file
+  fs.readFile('./config/auth.json', function(err, auth){
+    if(err){
+      var response = {
+        type: 'ERROR',
+        code: 'UIPASS_002',
+        message: 'Failed to read auth file from disk',
+        data: req.body,
+      }
+      res.send(JSON.stringify(response));
+      return
+    }
+    var authJson = JSON.parse(auth);
 
-  var response = {
-    type: 'SUCCESS',
-    code: 'UIPASS_002',
-    message: 'Successful Request',
-    data: "Password Updated",
-  }
-  res.send(JSON.stringify(response));
-  return
+    if (!bcrypt.compareSync(req.body.currentUsername, authJson.username) || !bcrypt.compareSync(req.body.currentPassword, authJson.password)) {
+      var response = {
+        type: 'ERROR',
+        code: 'AUTH_002',
+        message: 'Invalid Username or Password',
+        data: req.body,
+      }
+      res.send(JSON.stringify(response));
+      return
+    }
+
+    authJson.username = bcrypt.hashSync(req.body.username, 10);
+    authJson.password = bcrypt.hashSync(req.body.password, 10);
+
+    fs.writeFile('./config/auth.json', JSON.stringify(authJson), 'utf8', function(err){
+      if(err){
+        var response = {
+          type: 'ERROR',
+          code: 'UIPASS_003',
+          message: 'Failed to write to disk',
+          data: req.body,
+        }
+        res.send(JSON.stringify(response));
+        return
+      }
+      var response = {
+        type: 'SUCCESS',
+        code: 'UIPASS_002',
+        message: 'Successful Request',
+        data: 'Password Updated',
+      }
+      res.send(JSON.stringify(response));
+      return
+    });
+
+  });
+
 });
 
 module.exports = router;
