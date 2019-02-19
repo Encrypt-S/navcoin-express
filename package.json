@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "bitcoin-core": "^2.0.0",
     "config": "^2.0.1",
     "cookie-parser": "~1.4.3",
