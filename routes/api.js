@@ -221,7 +221,7 @@ router.post('/auth', function(req, res, next) {
     !bcrypt.compareSync(req.body.username, authJson.username) ||
     !bcrypt.compareSync(req.body.password, authJson.password)
   ) {
-    var response = {
+    const response = {
       type: 'ERROR',
       code: 'AUTH_002',
       message: 'Invalid Username or Password',
@@ -304,18 +304,20 @@ router.post('/rpc', function(req, res, next) {
 
 router.post('/walletoverview', (req, res, next) => {
   console.log(`/walletoverview called`);
-  // walletVersion: String; YES
+  // walletVersion: String;
   // isSyncing: Boolean;
-  // isStaking: Boolean; YES
+  // isStaking: Boolean;
+  // isEncrypted: Boolean;
   // isLocked: Boolean;
-  // currentBlock: number; YES
-  // highestKnownBlock: number; YES
-  // walletChain: String; YES
+  // currentBlock: number;
+  // highestKnownBlock: number;
+  // walletChain: String;
 
   const batch = [
     { method: 'getblockchaininfo' },
     { method: 'getstakinginfo' },
-    { method: 'getinfo' }
+    { method: 'getinfo' },
+    { method: 'help' }
   ];
   navClient
     .command(batch)
@@ -325,6 +327,9 @@ router.post('/walletoverview', (req, res, next) => {
       const getBlockchainInfoData = responses[0];
       const getStakingInfoData = responses[1];
       const getInfoData = responses[2];
+      // the 'walletlock' command will only appear in 'help' if the wallet is is encrypted
+      const isEncrypted =
+        responses[3].indexOf('walletlock') === -1 ? false : true;
 
       const response = {
         type: 'SUCCESS',
@@ -333,6 +338,7 @@ router.post('/walletoverview', (req, res, next) => {
         data: {
           walletVersion: getInfoData.version,
           walletChain: getBlockchainInfoData.chain,
+          isEncrypted: isEncrypted,
           isLocked: getInfoData.unlocked_until > 0,
           isStaking: getStakingInfoData.staking,
           currentBlock: getBlockchainInfoData.blocks,
