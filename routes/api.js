@@ -253,7 +253,7 @@ router.post('/auth', function(req, res, next) {
 });
 
 router.post('/rpc', function(req, res, next) {
-  console.log(`'/rpc called: ${req.body.command}`);
+  console.log(`/rpc called: ${req.body.command}`);
   //check if command on allowed list
   if (
     !req.body ||
@@ -300,6 +300,34 @@ router.post('/rpc', function(req, res, next) {
       res.send(JSON.stringify(response));
       return;
     });
+});
+
+router.post('/getmainaddress', function(req, res, next) {
+  console.log(`/getmainaddress`);
+
+  fs.readFile('./config/address.json', function(err, auth) {
+    if (err) {
+      const response = {
+        type: 'ERROR',
+        code: 'ADR_001',
+        message: 'Failed to read address file from disk',
+        data: req.body
+      };
+      res.send(JSON.stringify(response));
+      return;
+    }
+    const addressJson = JSON.parse(auth);
+
+    const response = {
+      type: 'SUCCESS',
+      code: 'ADR_001',
+      message: 'Successful Request',
+      data: addressJson
+    };
+    console.log(JSON.stringify(response));
+    res.send(JSON.stringify(response));
+    return;
+  });
 });
 
 router.post('/walletoverview', (req, res, next) => {
