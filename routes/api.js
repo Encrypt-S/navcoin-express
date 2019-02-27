@@ -304,7 +304,6 @@ router.post('/rpc', function(req, res, next) {
 
 router.post('/getmainaddress', function(req, res, next) {
   console.log(`/getmainaddress`);
-  //check if command on allowed list
 
   fs.readFile('./config/address.json', function(err, auth) {
     if (err) {
