@@ -165,6 +165,7 @@ router.use(function(req, res, next) {
         res.send(JSON.stringify(response));
         return;
       }
+
       var authJson = JSON.parse(auth);
       // verifies secret and checks exp
       jwt.verify(token, authJson.secret, function(err, decoded) {
@@ -257,8 +258,8 @@ router.post('/rpc', function(req, res, next) {
   //check if command on allowed list
   if (
     !req.body ||
-    !req.body.command ||
-    RPC_COMMANDS.indexOf(req.body.command) == -1
+    !req.body.method ||
+    RPC_COMMANDS.indexOf(req.body.method) == -1
   ) {
     const response = {
       type: 'ERROR',
@@ -270,7 +271,7 @@ router.post('/rpc', function(req, res, next) {
     return;
   }
 
-  let args = [req.body.command];
+  let args = [req.body.method];
 
   //add params if they exist
   if (req.body.params) args = args.concat(req.body.params);
@@ -302,6 +303,50 @@ router.post('/rpc', function(req, res, next) {
     });
 });
 
+router.post('/rpc/batch', (req, res, next) => {
+  if (
+    !req.body ||
+    !req.body[0].method ||
+    RPC_COMMANDS.indexOf(req.body[0].method) == -1
+  ) {
+    const response = {
+      type: 'ERROR',
+      code: 'RPC_004',
+      message: 'Invalid Request',
+      data: req.body
+    };
+    res.send(JSON.stringify(response));
+    return;
+  }
+
+  let batchCommands = req.body;
+  console.log('batch commands:', batchCommands);
+  navClient
+    .command(batchCommands)
+    .then(responses => {
+      const response = {
+        type: 'SUCCESS',
+        code: 'RPC_002',
+        message: 'Successful Request',
+        data: responses
+      };
+      console.log(`success ${response}`);
+      console.log(JSON.stringify(response));
+      res.send(JSON.stringify(response));
+      return;
+    })
+    .catch(err => {
+      const response = {
+        type: 'ERROR',
+        code: 'RPC_005',
+        message: 'RPC Error',
+        data: { error: err.code, message: err.message }
+      };
+      res.send(JSON.stringify(response));
+      return;
+    });
+});
+
 router.post('/walletoverview', (req, res, next) => {
   console.log(`/walletoverview called`);
   // walletVersion: String;
@@ -322,8 +367,6 @@ router.post('/walletoverview', (req, res, next) => {
   navClient
     .command(batch)
     .then(responses => {
-      console.log(responses);
-
       const getBlockchainInfoData = responses[0];
       const getStakingInfoData = responses[1];
       const getInfoData = responses[2];
@@ -353,7 +396,7 @@ router.post('/walletoverview', (req, res, next) => {
     .catch(err => {
       const response = {
         type: 'ERROR',
-        code: 'RPC_003',
+        code: 'RPC_004',
         message: 'RPC Error',
         data: { error: err.code, message: err.message }
       };
@@ -417,7 +460,7 @@ router.post('/ui-password', function(req, res, next) {
       'utf8',
       function(err) {
         if (err) {
-          var response = {
+          const response = {
             type: 'ERROR',
             code: 'UIPASS_003',
             message: 'Failed to write to disk',
@@ -426,7 +469,7 @@ router.post('/ui-password', function(req, res, next) {
           res.send(JSON.stringify(response));
           return;
         }
-        var response = {
+        const response = {
           type: 'SUCCESS',
           code: 'UIPASS_002',
           message: 'Successful Request',
