@@ -1,3 +1,6 @@
+const getMainAddress = require('./get-main-address');
+const setMainAddress = require('./set-main-address');
+
 const express = require('express');
 const router = express.Router();
 // const lodash = require('lodash');
@@ -347,44 +350,18 @@ router.post('/rpc/batch', (req, res, next) => {
     });
 });
 
-router.post('/getmainaddress', function(req, res, next) {
-  console.log(`/getmainaddress`);
+router.post('/get-main-address', function(req, res, next) {
+  console.log(`/get-main-address`);
+  getMainAddress(req, res, navClient);
+});
 
-  fs.readFile('./config/address.json', function(err, auth) {
-    if (err) {
-      const response = {
-        type: 'ERROR',
-        code: 'ADR_001',
-        message: 'Failed to read address file from disk',
-        data: req.body
-      };
-      res.send(JSON.stringify(response));
-      return;
-    }
-    const addressJson = JSON.parse(auth);
-
-    const response = {
-      type: 'SUCCESS',
-      code: 'ADR_001',
-      message: 'Successful Request',
-      data: addressJson
-    };
-    console.log(JSON.stringify(response));
-    res.send(JSON.stringify(response));
-    return;
-  });
+router.post('/set-main-address', function(req, res, next) {
+  //check args
+  setMainAddress(req, res, navClient);
 });
 
 router.post('/walletoverview', (req, res, next) => {
   console.log(`/walletoverview called`);
-  // walletVersion: String;
-  // isSyncing: Boolean;
-  // isStaking: Boolean;
-  // isEncrypted: Boolean;
-  // isLocked: Boolean;
-  // currentBlock: number;
-  // highestKnownBlock: number;
-  // walletChain: String;
 
   const batch = [
     { method: 'getblockchaininfo' },
@@ -445,7 +422,7 @@ router.post('/ui-password', function(req, res, next) {
     var response = {
       type: 'ERROR',
       code: 'UIPASS_001',
-      message: 'Invalid Request',
+      message: 'Invalid Args',
       data: req.body
     };
     res.send(JSON.stringify(response));
