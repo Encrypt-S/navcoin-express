@@ -360,6 +360,50 @@ router.post('/set-main-address', function(req, res, next) {
   setMainAddress(req, res, navClient);
 });
 
+router.post('/generate-main-address', function(req, res, next) {
+  navClient
+    .command('getnewaddress')
+    .then(data => {
+      const addressJson = JSON.stringify({ address: data });
+      console.log(data);
+      fs.writeFile(
+        './config/address.json',
+        JSON.stringify(addressJson),
+        'utf8',
+        function(err) {
+          if (err) {
+            const response = {
+              type: 'ERROR',
+              code: 'GENADR_002',
+              message: 'Failed to write to disk',
+              data: req.body
+            };
+            res.send(JSON.stringify(response));
+            return;
+          }
+          const response = {
+            type: 'SUCCESS',
+            code: 'GENADR_001',
+            message: 'Successful Request',
+            data: `Main Address Updated to ${data}`
+          };
+          res.send(JSON.stringify(response));
+          return;
+        }
+      );
+    })
+    .catch(err => {
+      const response = {
+        type: 'ERROR',
+        code: 'ADR_002',
+        message: 'Failed to new address, RPC Error',
+        data: { error: err.code, message: err.message }
+      };
+      res.send(JSON.stringify(response));
+      return;
+    });
+});
+
 router.post('/walletoverview', (req, res, next) => {
   console.log(`/walletoverview called`);
 

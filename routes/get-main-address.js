@@ -51,7 +51,6 @@ function getMainAddress(req, res, navClient) {
           return;
         });
     }
-
     navClient
       .command('validateaddress', addressJson.address)
       .then(data => {

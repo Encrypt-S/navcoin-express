@@ -12,9 +12,8 @@ function setMainAddress(req, res, navClient) {
     return;
   }
   const newAddress = req.body.address;
-
   navClient
-    .command('validateaddress', [newAddress])
+    .validateAddress(newAddress)
     .then(data => {
       if (!data.ismine) {
         const response = {
@@ -27,6 +26,30 @@ function setMainAddress(req, res, navClient) {
         res.send(JSON.stringify(response));
         return;
       }
+
+      const addressJson = JSON.stringify({ address: newAddress });
+
+      fs.writeFile('./config/address.json', addressJson, 'utf8', function(err) {
+        if (err) {
+          const response = {
+            type: 'ERROR',
+            code: 'SETADR_004',
+            message: 'Failed to write to disk',
+            data: req.body
+          };
+          res.send(JSON.stringify(response));
+          return;
+        }
+        const response = {
+          type: 'SUCCESS',
+          code: 'SETADR_005',
+          message: 'Successful Request',
+          data: `Main Address Updated to ${newAddress}`
+        };
+        res.send(JSON.stringify(response));
+
+        return;
+      });
     })
     .catch(err => {
       const response = {
@@ -39,34 +62,6 @@ function setMainAddress(req, res, navClient) {
       res.send(JSON.stringify(response));
       return;
     });
-
-  const addressJson = JSON.stringify({ address: newAddress });
-
-  fs.writeFile(
-    './config/address.json',
-    JSON.stringify(addressJson),
-    'utf8',
-    function(err) {
-      if (err) {
-        const response = {
-          type: 'ERROR',
-          code: 'SETADR_004',
-          message: 'Failed to write to disk',
-          data: req.body
-        };
-        res.send(JSON.stringify(response));
-        return;
-      }
-      const response = {
-        type: 'SUCCESS',
-        code: 'UIPASS_005',
-        message: 'Successful Request',
-        data: `Main Address Updated to ${newAddress}`
-      };
-      res.send(JSON.stringify(response));
-      return;
-    }
-  );
 }
 
 module.exports = setMainAddress;
