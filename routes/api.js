@@ -11,6 +11,8 @@ const fs = require('fs');
 const bcrypt = require('bcrypt');
 
 const RPC_COMMANDS = [
+  'walletlock',
+  'walletpassphrase',
   '￼getaddressbalance',
   'getaddressdeltas',
   'getaddressmempool',
@@ -257,7 +259,8 @@ router.post('/auth', function(req, res, next) {
 });
 
 router.post('/rpc', function(req, res, next) {
-  console.log(`/rpc called: ${req.body.command}`);
+  console.log(`/rpc called: ${req.body.method}`);
+  console.log(`arguments: ${req.body.parameters}`);
   //check if command on allowed list
   if (
     !req.body ||
@@ -276,8 +279,8 @@ router.post('/rpc', function(req, res, next) {
 
   let args = [req.body.method];
 
-  //add params if they exist
-  if (req.body.params) args = args.concat(req.body.params);
+  //add parameters if they exist
+  if (req.body.parameters) args = args.concat(req.body.parameters);
 
   console.log('Args:', args);
   //forward request to the navcoin cli
@@ -410,7 +413,7 @@ router.post('/walletoverview', (req, res, next) => {
   const batch = [
     { method: 'getblockchaininfo' },
     { method: 'getstakinginfo' },
-    { method: 'getinfo' },
+    { method: 'getwalletinfo' },
     { method: 'help' }
   ];
   navClient
@@ -418,7 +421,7 @@ router.post('/walletoverview', (req, res, next) => {
     .then(responses => {
       const getBlockchainInfoData = responses[0];
       const getStakingInfoData = responses[1];
-      const getInfoData = responses[2];
+      const getWalletInfoData = responses[2];
       // the 'walletlock' command will only appear in 'help' if the wallet is is encrypted
       const isEncrypted =
         responses[3].indexOf('walletlock') === -1 ? false : true;
@@ -428,11 +431,14 @@ router.post('/walletoverview', (req, res, next) => {
         code: 'RPC_002',
         message: 'Successful Request',
         data: {
-          walletVersion: getInfoData.version,
+          walletVersion: getWalletInfoData.version,
           walletChain: getBlockchainInfoData.chain,
+          isUnlockedForStaking: getWalletInfoData.unlocked_for_staking,
           isEncrypted: isEncrypted,
-          isLocked: getInfoData.unlocked_until > 0,
-          isStaking: getStakingInfoData.staking,
+          isLocked:
+            getWalletInfoData.unlocked_until === 0 ||
+            getWalletInfoData.unlocked_for_staking,
+          isStaking: getStakingInfoData.staking && getStakingInfoData.enabled,
           currentBlock: getBlockchainInfoData.blocks,
           highestKnownBlock: getBlockchainInfoData.blocks, //TODO Verify this is correct
           isSyncing: this.currentBlock < this.highestKnownBlock //TODO Verify this is correct
