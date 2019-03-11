@@ -10,6 +10,8 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 
+const WALLET_CONFIG_PATH = './config/wallet.conf';
+
 const RPC_COMMANDS = [
   'walletlock',
   'walletpassphrase',
@@ -150,6 +152,8 @@ const navClient = new Client({
 });
 
 router.use(function(req, res, next) {
+  console.log(`${req.originalUrl} called.`);
+
   //skip token middleware on auth attempt
   if (req.originalUrl == '/api/auth') {
     next();
@@ -259,8 +263,11 @@ router.post('/auth', function(req, res, next) {
 });
 
 router.post('/rpc', function(req, res, next) {
-  console.log(`/rpc called: ${req.body.method}`);
-  console.log(`arguments: ${req.body.parameters}`);
+  console.log(
+    `${req.body.method} rpc method called with arguments: ${
+      req.body.parameters
+    }`
+  );
   //check if command on allowed list
   if (
     !req.body ||
@@ -282,7 +289,6 @@ router.post('/rpc', function(req, res, next) {
   //add parameters if they exist
   if (req.body.parameters) args = args.concat(req.body.parameters);
 
-  console.log('Args:', args);
   //forward request to the navcoin cli
   navClient
     .command(...args)
@@ -293,7 +299,6 @@ router.post('/rpc', function(req, res, next) {
         message: 'Successful Request',
         data: data
       };
-      console.log('success');
       res.send(JSON.stringify(response));
       return;
     })
@@ -336,8 +341,6 @@ router.post('/rpc/batch', (req, res, next) => {
         message: 'Successful Request',
         data: responses
       };
-      console.log(`success ${response}`);
-      console.log(JSON.stringify(response));
       res.send(JSON.stringify(response));
       return;
     })
@@ -354,12 +357,10 @@ router.post('/rpc/batch', (req, res, next) => {
 });
 
 router.post('/get-main-address', function(req, res, next) {
-  console.log(`/get-main-address`);
   getMainAddress(req, res, navClient);
 });
 
 router.post('/set-main-address', function(req, res, next) {
-  //check args
   setMainAddress(req, res, navClient);
 });
 
@@ -408,8 +409,6 @@ router.post('/generate-main-address', function(req, res, next) {
 });
 
 router.post('/walletoverview', (req, res, next) => {
-  console.log(`/walletoverview called`);
-
   const batch = [
     { method: 'getblockchaininfo' },
     { method: 'getstakinginfo' },
@@ -458,6 +457,66 @@ router.post('/walletoverview', (req, res, next) => {
       res.send(JSON.stringify(response));
       return;
     });
+});
+
+router.post('/get-wallet-config', (req, res, next) => {
+  fs.readFile(WALLET_CONFIG_PATH, function(err, fileBuffer) {
+    if (err) {
+      const response = {
+        type: 'ERROR',
+        code: 'GET_WALLET_CFG_002',
+        message: 'Failed to read wallet config file from disk',
+        data: req.body
+      };
+      res.send(JSON.stringify(response));
+      return;
+    }
+    const config = fileBuffer.toString();
+
+    const response = {
+      type: 'SUCCESS',
+      code: 'GET_WALLET_CFG_001',
+      message: 'RPC SUCCESS',
+      data: { config: config }
+    };
+
+    res.send(JSON.stringify(response));
+  });
+});
+
+router.post('/update-wallet-config', (req, res, next) => {
+  if (!req.body || !req.body.config) {
+    const response = {
+      type: 'ERROR',
+      code: 'UPDATE_WALLET_CFG_002',
+      message: 'Invalid Args',
+      data: req.body
+    };
+    res.send(JSON.stringify(response));
+    return;
+  }
+
+  fs.writeFile(WALLET_CONFIG_PATH, req.body.config, 'utf8', function(err) {
+    if (err) {
+      const response = {
+        type: 'ERROR',
+        code: 'UPDATE_WALLET_CFG_004',
+        message: 'Failed to write config to disk',
+        data: req.body
+      };
+      res.send(JSON.stringify(response));
+      return;
+    }
+    const response = {
+      type: 'SUCCESS',
+      code: 'UPDATE_WALLET_CFG_001',
+      message: 'Config successfully updated'
+    };
+
+    res.send(JSON.stringify(response));
+
+    return;
+  });
 });
 
 router.post('/ui-password', function(req, res, next) {

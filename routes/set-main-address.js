@@ -27,9 +27,12 @@ function setMainAddress(req, res, navClient) {
         return;
       }
 
-      const addressJson = JSON.stringify({ address: newAddress });
-
-      fs.writeFile('./config/address.json', addressJson, 'utf8', function(err) {
+      const addressObject = { address: newAddress };
+      console.log(addressObject);
+      console.log({ address: newAddress });
+      fs.writeFile('./config/address.json', addressObject, 'utf8', function(
+        err
+      ) {
         if (err) {
           const response = {
             type: 'ERROR',

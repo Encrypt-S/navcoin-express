@@ -14,9 +14,9 @@ var certRouter = require('./routes/cert');
 
 var app = express();
 
-pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
+pem.createCertificate({ days: 1, selfSigned: true }, function(err, keys) {
   if (err) {
-    throw err
+    throw err;
   }
 
   const ssl = {
@@ -24,35 +24,39 @@ pem.createCertificate({ days: 1, selfSigned: true }, function (err, keys) {
     cert: keys.certificate,
     requestCert: false,
     rejectUnauthorized: false
-  }
+  };
 
   const httpsServer = https.createServer(ssl, app);
 
-  var port = (config.ssl.port == 443) ? '' : ':' + config.ssl.port;
+  var port = config.ssl.port == 443 ? '' : ':' + config.ssl.port;
 
-  httpsServer.listen(443, (err) => {
-  	console.log('HTTPS Server running on port ' + port, err);
+  httpsServer.listen(443, err => {
+    console.log(`HTTPS Server running on port ${config.ssl.port}`);
+    if (err) console.log(`Error: ${err}`);
     setupServer();
   });
-})
+});
 
 function setupServer() {
-  app.use (function (req, res, next) {
-      if (req.protocol === 'https') {
-          console.log(req.protocol, req.secure);
-          next();
-      } else {
-          console.log('redirected');
-          var port = (config.ssl.port == 443) ? '' : ':' + config.ssl.port;
-          var hostname = req.headers.host.split(':')[0]
-          var host = hostname + port
-          res.redirect('https://' + host + req.url);
-      }
+  app.use(function(req, res, next) {
+    if (req.protocol === 'https') {
+      console.log(req.protocol, req.secure);
+      next();
+    } else {
+      console.log('redirected');
+      var port = config.ssl.port == 443 ? '' : ':' + config.ssl.port;
+      var hostname = req.headers.host.split(':')[0];
+      var host = hostname + port;
+      res.redirect('https://' + host + req.url);
+    }
   });
 
   app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-access-token");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, x-access-token'
+    );
     next();
   });
 
@@ -85,9 +89,6 @@ function setupServer() {
     res.status(err.status || 500);
     res.render('error');
   });
-}//setupServer
-
-
-
+} //setupServer
 
 module.exports = app;
