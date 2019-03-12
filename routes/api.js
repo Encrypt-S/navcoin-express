@@ -408,12 +408,13 @@ router.post('/generate-main-address', function(req, res, next) {
     });
 });
 
-router.post('/walletoverview', (req, res, next) => {
+router.post('/get-wallet-overview', (req, res, next) => {
   const batch = [
     { method: 'getblockchaininfo' },
     { method: 'getstakinginfo' },
     { method: 'getwalletinfo' },
-    { method: 'help' }
+    { method: 'help' },
+    { method: 'getinfo' }
   ];
   navClient
     .command(batch)
@@ -421,6 +422,7 @@ router.post('/walletoverview', (req, res, next) => {
       const getBlockchainInfoData = responses[0];
       const getStakingInfoData = responses[1];
       const getWalletInfoData = responses[2];
+      const getInfoData = responses[4];
       // the 'walletlock' command will only appear in 'help' if the wallet is is encrypted
       const isEncrypted =
         responses[3].indexOf('walletlock') === -1 ? false : true;
@@ -430,7 +432,7 @@ router.post('/walletoverview', (req, res, next) => {
         code: 'RPC_002',
         message: 'Successful Request',
         data: {
-          walletVersion: getWalletInfoData.version,
+          walletVersion: getInfoData.version,
           walletChain: getBlockchainInfoData.chain,
           isUnlockedForStaking: getWalletInfoData.unlocked_for_staking,
           isEncrypted: isEncrypted,
@@ -438,12 +440,9 @@ router.post('/walletoverview', (req, res, next) => {
             getWalletInfoData.unlocked_until === 0 ||
             getWalletInfoData.unlocked_for_staking,
           isStaking: getStakingInfoData.staking && getStakingInfoData.enabled,
-          currentBlock: getBlockchainInfoData.blocks,
-          highestKnownBlock: getBlockchainInfoData.blocks, //TODO Verify this is correct
-          isSyncing: this.currentBlock < this.highestKnownBlock //TODO Verify this is correct
+          currentBlock: getBlockchainInfoData.blocks
         }
       };
-      console.log('success');
       res.send(JSON.stringify(response));
       return;
     })
