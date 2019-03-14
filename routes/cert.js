@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   var port = '4200'
   var hostname = req.headers.host.split(':')[0]
   var host = hostname + ':' + port
-  console.log('host', host)
+  console.log('redirect to host', host)
   res.redirect('https://' + host);
 });
 
