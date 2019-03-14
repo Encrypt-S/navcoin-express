@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 
-const WALLET_CONFIG_PATH = '/home/odroid/.navcoin4/wallet.conf';
+const WALLET_CONFIG_PATH = '/home/odroid/.navcoin4/navcoin.conf';
 
 const RPC_COMMANDS = [
   'walletlock',
