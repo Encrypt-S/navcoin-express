@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "IMPORTING"
-exit 1
+exit 0
