@@ -1,5 +1,7 @@
 #!/bin/bash
 
+forever stopall
+
 cd /home/odroid/navdroid/angular
 git pull
 npm install
@@ -7,8 +9,6 @@ npm install
 cd /home/odroid/navdroid/express
 git pull
 npm install
-
-forever stopall
 
 cd /home/odroid/navdroid/express
 forever start ./bin/www
