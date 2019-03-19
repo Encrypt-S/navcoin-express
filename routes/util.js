@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const { exec } = require('child_process');
+const common = require('../lib/common');
 
 function generateResponseObject(type, code, message, data = {}) {
   if (!type || !code || !message) {
@@ -97,16 +99,45 @@ router.get('/update-daemon', (req, res, next) => {
 });
 
 router.get('/update-ui', (req, res, next) => {
-  try {
-    // runUpdateDaemonScript()
+
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
     const response = JSON.stringify(
       generateResponseObject(
-        'SUCCESS',
-        'UIUPD_001',
-        'The Stakebox UI was successfully updated'
+        'ERROR',
+        'UIUPD_004',
+        'Failed to update the Stakebox UI',
+        {}
       )
     );
-    res.status(200).send(response);
+    res.status(500).send(response);
+    return
+  }
+
+  try {
+    exec('/home/odroid/navdroid/scripts/update-ui.sh', (error, stdout, stderr) => {
+      if (error || stderr) {
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'UIUPD_003',
+            'Failed to update the Stakebox UI',
+            { error, stderr }
+          )
+        );
+        res.status(500).send(response);
+        return
+      }
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'UIUPD_001',
+          'The Stakebox UI was successfully updated'
+        )
+      );
+      res.status(200).send(response);
+      return
+    });
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
