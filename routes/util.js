@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
+const { exec } = require('child_process');
+const common = require('../lib/common');
 
 function generateResponseObject(type, code, message, data = {}) {
   if (!type || !code || !message) {
@@ -72,17 +74,45 @@ router.use(function(req, res, next) {
   }
 });
 
-router.get('/update-daemon', (req, res, next) => {
-  try {
-    // runUpdateDaemonScript()
+router.post('/update-daemon', (req, res, next) => {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
     const response = JSON.stringify(
       generateResponseObject(
-        'SUCCESS',
-        'DMNUPD_001',
-        'The NavCoin daemon was successfully updated'
+        'ERROR',
+        'PASSWD_001',
+        'Unauthorized',
+        {}
       )
     );
-    res.status(200).send(response);
+    res.status(500).send(response);
+    return
+  }
+
+  try {
+    exec('/home/odroid/navdroid/express/scripts/update-daemon.sh', (error, stdout, stderr) => {
+      if (error || stderr) {
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'UIUPD_003',
+            'Failed to update the NavCoin daemon',
+            { error, stderr }
+          )
+        );
+        res.status(500).send(response);
+        return
+      }
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'UIUPD_001',
+          'The NavCoin daemon was successfully updated'
+        )
+      );
+      res.status(200).send(response);
+      return
+    });
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -96,17 +126,46 @@ router.get('/update-daemon', (req, res, next) => {
   }
 });
 
-router.get('/update-ui', (req, res, next) => {
-  try {
-    // runUpdateDaemonScript()
+router.post('/update-ui', (req, res, next) => {
+
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
     const response = JSON.stringify(
       generateResponseObject(
-        'SUCCESS',
-        'UIUPD_001',
-        'The Stakebox UI was successfully updated'
+        'ERROR',
+        'PASSWD_001',
+        'Unauthorized',
+        {}
       )
     );
-    res.status(200).send(response);
+    res.status(500).send(response);
+    return
+  }
+
+  try {
+    exec('/home/odroid/navdroid/express/scripts/update-ui.sh', (error, stdout, stderr) => {
+      if (error || stderr) {
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'UIUPD_003',
+            'Failed to update the Stakebox UI',
+            { error, stderr }
+          )
+        );
+        res.status(500).send(response);
+        return
+      }
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'UIUPD_001',
+          'The Stakebox UI was successfully updated'
+        )
+      );
+      res.status(200).send(response);
+      return
+    });
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -120,22 +179,49 @@ router.get('/update-ui', (req, res, next) => {
   }
 });
 
-router.get('/reboot', (req, res, next) => {
-  try {
-    // runUpdateDaemonScript()
+router.post('/reboot', (req, res, next) => {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
     const response = JSON.stringify(
       generateResponseObject(
-        'SUCCESS',
-        'REBOOT_001',
-        'The Stakebox will restart shortly'
+        'ERROR',
+        'PASSWD_001',
+        'Unauthorized',
+        {}
       )
     );
-    res.status(200).send(response);
+    res.status(500).send(response);
+    return
+  }
+  try {
+    exec('/home/odroid/navdroid/express/scripts/reboot.sh', (error, stdout, stderr) => {
+      if (error || stderr) {
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'REBOOT_001',
+            'Failed to restart the StakeBox',
+            { error, stderr }
+          )
+        );
+        res.status(500).send(response);
+        return
+      }
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'REBOOT_002',
+          'The StakeBox is rebooting'
+        )
+      );
+      res.status(200).send(response);
+      return
+    });
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
-        'REBOOT_002',
+        'REBOOT_004',
         'Failed to restart the Stakebox',
         { err }
       )
@@ -144,24 +230,38 @@ router.get('/reboot', (req, res, next) => {
   }
 });
 
-router.get('/backup-wallet', (req, res, next) => {
+router.post('/backup-wallet', (req, res, next) => {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
+    const response = JSON.stringify(
+      generateResponseObject(
+        'ERROR',
+        'PASSWD_001',
+        'Unauthorized',
+        {}
+      )
+    );
+    res.status(500).send(response);
+    return
+  }
+
   try {
-    // runUpdateDaemonScript()
+    //run the backup proceedure
     const response = JSON.stringify(
       generateResponseObject(
         'SUCCESS',
-        'WLTDAT_001',
-        'Wallet file successfully backed up',
-        { walletFile: {} }
+        'BACKUP_001',
+        'The wallet was succesfully backed up'
       )
     );
     res.status(200).send(response);
+    return
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
-        'WLTDAT_002',
-        'Failed to back up the wallet file',
+        'BACKUP_001',
+        'Failed to backup the wallet file',
         { err }
       )
     );
@@ -170,37 +270,54 @@ router.get('/backup-wallet', (req, res, next) => {
 });
 
 router.post('/import-wallet', (req, res, next) => {
-  if (!req.body.file) {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
-        'IMPWALL_001',
-        'No wallet file was submitted, unable to import'
+        'PASSWD_001',
+        'Unauthorized',
+        {}
       )
     );
-    res.status(400).send(response);
-  } else {
-    try {
-      // importWalletLogic()
+    res.status(500).send(response);
+    return
+  }
+
+  try {
+    exec('/home/odroid/navdroid/express/scripts/import.sh', (error, stdout, stderr) => {
+      if (error || stderr) {
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'IMPORT_001',
+            'Failed to import the wallet',
+            { error, stderr }
+          )
+        );
+        res.status(500).send(response);
+        return
+      }
       const response = JSON.stringify(
         generateResponseObject(
           'SUCCESS',
-          'IMPWALL_002',
-          'Wallet successfully imported'
+          'IMPORT_003',
+          'The wallet has been successfully imported'
         )
       );
       res.status(200).send(response);
-    } catch (err) {
-      const response = JSON.stringify(
-        generateResponseObject(
-          'ERROR',
-          'IMPWALL_003',
-          'Failed to import wallet',
-          { err }
-        )
-      );
-      res.status(500).send(response);
-    }
+      return
+    });
+  } catch (err) {
+    const response = JSON.stringify(
+      generateResponseObject(
+        'ERROR',
+        'IMPORT_002',
+        'Failed to import the wallet file',
+        { err }
+      )
+    );
+    res.status(500).send(response);
   }
 });
 
