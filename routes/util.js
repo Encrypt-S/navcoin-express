@@ -106,7 +106,7 @@ router.post('/update-ui', (req, res, next) => {
       generateResponseObject(
         'ERROR',
         'UIUPD_004',
-        'Failed to update the Stakebox UI',
+        'Unauthorized',
         {}
       )
     );
