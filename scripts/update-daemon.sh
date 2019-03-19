@@ -49,6 +49,8 @@ fi
 
 echo "Update Required... Updating"
 
+cd /home/odroid/navdroid
+
 echo "Downloading latest version"
 download="https://github.com/NAVCoin/navcoin-core/releases/download/${tag}/navcoin-${tag}-arm-linux-gnueabihf.tar.gz"
 
