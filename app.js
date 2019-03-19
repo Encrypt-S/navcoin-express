@@ -9,8 +9,9 @@ const https = require('https');
 const pem = require('pem');
 const config = require('config');
 
-var apiRouter = require('./routes/api');
-var certRouter = require('./routes/cert');
+const utilRouter = require('./routes/util');
+const apiRouter = require('./routes/api');
+const certRouter = require('./routes/cert');
 
 var app = express();
 
@@ -73,6 +74,8 @@ function setupServer() {
   app.use('/api', apiRouter);
 
   app.use('/cert', certRouter);
+
+  app.use('/util', utilRouter);
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
