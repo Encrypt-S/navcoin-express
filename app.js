@@ -11,7 +11,7 @@ const config = require('config');
 
 const utilRouter = require('./routes/util');
 const apiRouter = require('./routes/api');
-const certRouter = require('./routes/cert');
+const loginRouter = require('./routes/login');
 
 var app = express();
 
@@ -73,7 +73,7 @@ function setupServer() {
 
   app.use('/api', apiRouter);
 
-  app.use('/cert', certRouter);
+  app.use('/login', loginRouter);
 
   app.use('/util', utilRouter);
 
