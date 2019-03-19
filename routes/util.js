@@ -74,7 +74,7 @@ router.use(function(req, res, next) {
   }
 });
 
-router.get('/update-daemon', (req, res, next) => {
+router.post('/update-daemon', (req, res, next) => {
   try {
     // runUpdateDaemonScript()
     const response = JSON.stringify(
@@ -98,7 +98,7 @@ router.get('/update-daemon', (req, res, next) => {
   }
 });
 
-router.get('/update-ui', (req, res, next) => {
+router.post('/update-ui', (req, res, next) => {
 
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
@@ -175,7 +175,7 @@ router.get('/reboot', (req, res, next) => {
   }
 });
 
-router.get('/backup-wallet', (req, res, next) => {
+router.post('/backup-wallet', (req, res, next) => {
   try {
     // runUpdateDaemonScript()
     const response = JSON.stringify(
