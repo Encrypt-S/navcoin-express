@@ -90,7 +90,7 @@ router.post('/update-daemon', (req, res, next) => {
   }
 
   try {
-    exec('/home/odroid/navdroid/scripts/update-daemon.sh', (error, stdout, stderr) => {
+    exec('/home/odroid/navdroid/express/scripts/update-daemon.sh', (error, stdout, stderr) => {
       if (error || stderr) {
         const response = JSON.stringify(
           generateResponseObject(
@@ -143,7 +143,7 @@ router.post('/update-ui', (req, res, next) => {
   }
 
   try {
-    exec('/home/odroid/navdroid/scripts/update-ui.sh', (error, stdout, stderr) => {
+    exec('/home/odroid/navdroid/express/scripts/update-ui.sh', (error, stdout, stderr) => {
       if (error || stderr) {
         const response = JSON.stringify(
           generateResponseObject(
@@ -194,7 +194,7 @@ router.post('/reboot', (req, res, next) => {
     return
   }
   try {
-    exec('/home/odroid/navdroid/scripts/reboot.sh', (error, stdout, stderr) => {
+    exec('/home/odroid/navdroid/express/scripts/reboot.sh', (error, stdout, stderr) => {
       if (error || stderr) {
         const response = JSON.stringify(
           generateResponseObject(
@@ -285,7 +285,7 @@ router.post('/import-wallet', (req, res, next) => {
   }
 
   try {
-    exec('/home/odroid/navdroid/scripts/import.sh', (error, stdout, stderr) => {
+    exec('/home/odroid/navdroid/express/scripts/import.sh', (error, stdout, stderr) => {
       if (error || stderr) {
         const response = JSON.stringify(
           generateResponseObject(
