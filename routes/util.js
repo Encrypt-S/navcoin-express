@@ -196,32 +196,30 @@ router.post('/reboot', (req, res, next) => {
   }
 
   try {
-    exec(
-      '/home/odroid/navdroid/express/scripts/reboot.sh',
-      (error, stdout, stderr) => {
-        if (error || stderr) {
-          const response = JSON.stringify(
-            generateResponseObject(
-              'ERROR',
-              'REBOOT_001',
-              'Failed to restart the StakeBox',
-              { error, stderr }
-            )
-          );
-          res.status(500).send(response);
-          return;
-        }
-        const response = JSON.stringify(
-          generateResponseObject(
-            'SUCCESS',
-            'REBOOT_002',
-            'The StakeBox is rebooting'
-          )
-        );
-        res.status(200).send(response);
-        return;
-      }
+    const response = JSON.stringify(
+      generateResponseObject(
+        'SUCCESS',
+        'REBOOT_002',
+        'The StakeBox is rebooting'
+      )
     );
+    res.status(200).send(response);
+
+    const command = spawn('/home/odroid/navdroid/express/scripts/reboot.sh');
+
+    command.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    command.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    command.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+
+
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
