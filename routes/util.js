@@ -177,7 +177,7 @@ router.post('/update-ui', (req, res, next) => {
       generateResponseObject(
         'ERROR',
         'UIUPD_002',
-        'Failed to update the Stakebox UI',
+        'Failed to update the NavDroid Interface',
         { err }
       )
     );
@@ -200,7 +200,7 @@ router.post('/reboot', (req, res, next) => {
       generateResponseObject(
         'SUCCESS',
         'REBOOT_002',
-        'The StakeBox is rebooting'
+        'The NavDroid is rebooting'
       )
     );
     res.status(200).send(response);
@@ -226,6 +226,75 @@ router.post('/reboot', (req, res, next) => {
         'ERROR',
         'REBOOT_004',
         'Failed to restart the Stakebox',
+        { err }
+      )
+    );
+    res.status(500).send(response);
+  }
+});
+
+router.post('/restart-daemon', (req, res, next) => {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
+    const response = JSON.stringify(
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
+    );
+    res.status(500).send(response);
+    return;
+  }
+
+  try {
+
+    const command = spawn('/home/odroid/navdroid/express/scripts/restart-daemon.sh');
+
+    command.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'RESTART_DAEMON_001',
+          'NavCoin is restarting',
+          {data},
+        )
+      );
+      res.status(200).send(response);
+      return
+    });
+
+    command.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'RESTART_DAEMON_002',
+          'There was an error restarting NavCoin',
+          {data},
+        )
+      );
+      res.status(500).send(response);
+      return
+    });
+
+    command.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'RESTART_DAEMON_003',
+          'The process restarting NavCoin closed',
+          {code},
+        )
+      );
+      res.status(200).send(response);
+      return
+    });
+
+  } catch (err) {
+    const response = JSON.stringify(
+      generateResponseObject(
+        'ERROR',
+        'RESTART_DAEMON_004',
+        'Failed to restart NavCoin',
         { err }
       )
     );
@@ -310,68 +379,6 @@ router.post('/import-wallet', (req, res, next) => {
         'ERROR',
         'IMPORT_002',
         'Failed to import the wallet file',
-        { err }
-      )
-    );
-    res.status(500).send(response);
-  }
-});
-
-router.post('/update-rpc-auth', (req, res, next) => {
-  if (!req.body.newPassword || !req.body.newUsername) {
-    const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'RPCAUTH_001',
-        'Incorrect arguments, expected: {newPassword, newUsername}'
-      )
-    );
-    res.status(400).send(response);
-  } else {
-    try {
-      // updateRPCAuthLogic()
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'RPCAUTH_002',
-          'RPC username and password successfully updated'
-        )
-      );
-      res.status(200).send(response);
-    } catch (err) {
-      const response = JSON.stringify(
-        generateResponseObject(
-          'ERROR',
-          'RPCAUTH_003',
-          'Failed to update RPC username and password',
-          { err }
-        )
-      );
-      res.status(500).send(response);
-    }
-  }
-});
-
-router.post('/update-rpc-auth', (req, res, next) => {
-  var verified = common.checkPassword(req.body.password);
-  if (!verified) {
-    const response = JSON.stringify(
-      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
-    );
-    res.status(500).send(response);
-    return;
-  }
-
-  try {
-    //logic to update the wallet config
-    //logic to update the server config (so we have the new rpc details)
-    //restart after sending success response
-  } catch (err) {
-    const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'RPCAUTH_002',
-        'Failed to update the RPC auth details',
         { err }
       )
     );
