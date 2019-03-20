@@ -370,31 +370,26 @@ router.post('/generate-main-address', function(req, res, next) {
     .then(data => {
       const addressJson = JSON.stringify({ address: data });
       console.log(data);
-      fs.writeFile(
-        './config/address.json',
-        JSON.stringify(addressJson),
-        'utf8',
-        function(err) {
-          if (err) {
-            const response = {
-              type: 'ERROR',
-              code: 'GENADR_002',
-              message: 'Failed to write to disk',
-              data: req.body
-            };
-            res.send(JSON.stringify(response));
-            return;
-          }
+      fs.writeFile('./config/address.json', addressJson, 'utf8', function(err) {
+        if (err) {
           const response = {
-            type: 'SUCCESS',
-            code: 'GENADR_001',
-            message: 'Successful Request',
-            data: `Main Address Updated to ${data}`
+            type: 'ERROR',
+            code: 'GENADR_002',
+            message: 'Failed to write to disk',
+            data: req.body
           };
           res.send(JSON.stringify(response));
           return;
         }
-      );
+        const response = {
+          type: 'SUCCESS',
+          code: 'GENADR_001',
+          message: 'Successful Request',
+          data: `Main Address Updated to ${data}`
+        };
+        res.send(JSON.stringify(response));
+        return;
+      });
     })
     .catch(err => {
       const response = {

@@ -16,12 +16,12 @@ function getMainAddress(req, res, navClient) {
     let addressJson;
     try {
       addressJson = JSON.parse(auth);
+      if (!addressJson.address) {
+        createNewAddress(res, navClient);
+        return;
+      }
     } catch (err) {
       // can't read the file, might be corrupt
-      createNewAddress(res, navClient);
-      return;
-    }
-    if (!addressJson.address) {
       createNewAddress(res, navClient);
       return;
     }
@@ -80,7 +80,7 @@ function createNewAddress(res, navClient) {
           } else {
             const response = {
               type: 'SUCCESS',
-              code: 'ADR_001',
+              code: 'ADR_005',
               message: 'Successful Request',
               data: { address: newAddress }
             };
