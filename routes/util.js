@@ -78,41 +78,39 @@ router.post('/update-daemon', (req, res, next) => {
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
     const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'PASSWD_001',
-        'Unauthorized',
-        {}
-      )
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
     );
     res.status(500).send(response);
-    return
+    return;
   }
 
   try {
-    exec('/home/odroid/navdroid/express/scripts/update-daemon.sh', (error, stdout, stderr) => {
-      if (error || stderr) {
+    exec(
+      '/home/odroid/navdroid/express/scripts/update-daemon.sh',
+      (error, stdout, stderr) => {
+        if (error || stderr) {
+          const response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'UIUPD_003',
+              'Failed to update the NavCoin daemon',
+              { error, stderr }
+            )
+          );
+          res.status(500).send(response);
+          return;
+        }
         const response = JSON.stringify(
           generateResponseObject(
-            'ERROR',
-            'UIUPD_003',
-            'Failed to update the NavCoin daemon',
-            { error, stderr }
+            'SUCCESS',
+            'UIUPD_001',
+            'The NavCoin daemon was successfully updated'
           )
         );
-        res.status(500).send(response);
-        return
+        res.status(200).send(response);
+        return;
       }
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'UIUPD_001',
-          'The NavCoin daemon was successfully updated'
-        )
-      );
-      res.status(200).send(response);
-      return
-    });
+    );
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -127,45 +125,42 @@ router.post('/update-daemon', (req, res, next) => {
 });
 
 router.post('/update-ui', (req, res, next) => {
-
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
     const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'PASSWD_001',
-        'Unauthorized',
-        {}
-      )
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
     );
     res.status(500).send(response);
-    return
+    return;
   }
 
   try {
-    exec('/home/odroid/navdroid/express/scripts/update-ui.sh', (error, stdout, stderr) => {
-      if (error || stderr) {
+    exec(
+      '/home/odroid/navdroid/express/scripts/update-ui.sh',
+      (error, stdout, stderr) => {
+        if (error || stderr) {
+          const response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'UIUPD_003',
+              'Failed to update the Stakebox UI',
+              { error, stderr }
+            )
+          );
+          res.status(500).send(response);
+          return;
+        }
         const response = JSON.stringify(
           generateResponseObject(
-            'ERROR',
-            'UIUPD_003',
-            'Failed to update the Stakebox UI',
-            { error, stderr }
+            'SUCCESS',
+            'UIUPD_001',
+            'The Stakebox UI was successfully updated'
           )
         );
-        res.status(500).send(response);
-        return
+        res.status(200).send(response);
+        return;
       }
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'UIUPD_001',
-          'The Stakebox UI was successfully updated'
-        )
-      );
-      res.status(200).send(response);
-      return
-    });
+    );
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -183,40 +178,39 @@ router.post('/reboot', (req, res, next) => {
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
     const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'PASSWD_001',
-        'Unauthorized',
-        {}
-      )
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
     );
     res.status(500).send(response);
-    return
+    return;
   }
+
   try {
-    exec('/home/odroid/navdroid/express/scripts/reboot.sh', (error, stdout, stderr) => {
-      if (error || stderr) {
+    exec(
+      '/home/odroid/navdroid/express/scripts/reboot.sh',
+      (error, stdout, stderr) => {
+        if (error || stderr) {
+          const response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'REBOOT_001',
+              'Failed to restart the StakeBox',
+              { error, stderr }
+            )
+          );
+          res.status(500).send(response);
+          return;
+        }
         const response = JSON.stringify(
           generateResponseObject(
-            'ERROR',
-            'REBOOT_001',
-            'Failed to restart the StakeBox',
-            { error, stderr }
+            'SUCCESS',
+            'REBOOT_002',
+            'The StakeBox is rebooting'
           )
         );
-        res.status(500).send(response);
-        return
+        res.status(200).send(response);
+        return;
       }
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'REBOOT_002',
-          'The StakeBox is rebooting'
-        )
-      );
-      res.status(200).send(response);
-      return
-    });
+    );
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -234,15 +228,10 @@ router.post('/backup-wallet', (req, res, next) => {
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
     const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'PASSWD_001',
-        'Unauthorized',
-        {}
-      )
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
     );
     res.status(500).send(response);
-    return
+    return;
   }
 
   try {
@@ -255,7 +244,7 @@ router.post('/backup-wallet', (req, res, next) => {
       )
     );
     res.status(200).send(response);
-    return
+    return;
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -273,41 +262,39 @@ router.post('/import-wallet', (req, res, next) => {
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
     const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'PASSWD_001',
-        'Unauthorized',
-        {}
-      )
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
     );
     res.status(500).send(response);
-    return
+    return;
   }
 
   try {
-    exec('/home/odroid/navdroid/express/scripts/import.sh', (error, stdout, stderr) => {
-      if (error || stderr) {
+    exec(
+      '/home/odroid/navdroid/express/scripts/import.sh',
+      (error, stdout, stderr) => {
+        if (error || stderr) {
+          const response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'IMPORT_001',
+              'Failed to import the wallet',
+              { error, stderr }
+            )
+          );
+          res.status(500).send(response);
+          return;
+        }
         const response = JSON.stringify(
           generateResponseObject(
-            'ERROR',
-            'IMPORT_001',
-            'Failed to import the wallet',
-            { error, stderr }
+            'SUCCESS',
+            'IMPORT_003',
+            'The wallet has been successfully imported'
           )
         );
-        res.status(500).send(response);
-        return
+        res.status(200).send(response);
+        return;
       }
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'IMPORT_003',
-          'The wallet has been successfully imported'
-        )
-      );
-      res.status(200).send(response);
-      return
-    });
+    );
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
@@ -353,6 +340,33 @@ router.post('/update-rpc-auth', (req, res, next) => {
       );
       res.status(500).send(response);
     }
+  }
+});
+
+router.post('/update-rpc-auth', (req, res, next) => {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
+    const response = JSON.stringify(
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
+    );
+    res.status(500).send(response);
+    return;
+  }
+
+  try {
+    //logic to update the wallet config
+    //logic to update the server config (so we have the new rpc details)
+    //restart after sending success response
+  } catch (err) {
+    const response = JSON.stringify(
+      generateResponseObject(
+        'ERROR',
+        'RPCAUTH_002',
+        'Failed to update the RPC auth details',
+        { err }
+      )
+    );
+    res.status(500).send(response);
   }
 });
 
