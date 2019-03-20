@@ -29,7 +29,7 @@ do
 done
 
 if [ -z "$tag" ]; then
-        echo "{\"last_run\":\"${now}\",\"success\":false,\"code\":\"NO_RELEASE\"}" > /home/odroid/navdroid/express/log/update.json
+  echo "{\"last_run\":\"${now}\",\"success\":false,\"code\":\"NO_RELEASE\"}" > /home/odroid/navdroid/express/log/update.json
   echo "Release not found"
   exit 0
 fi

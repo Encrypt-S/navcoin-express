@@ -6,25 +6,25 @@ chmod 777 $log
 
 forever stopall >> $log
 
-echo "forever stopped \n" >> $log
+echo "forever stopped" >> $log
 
 cd /home/odroid/navdroid/angular
 git pull >> $log
 # npm install
 
-echo "pulled angular \n" >> $log
+echo "pulled angular" >> $log
 
 cd /home/odroid/navdroid/express
 git pull >> $log
 # npm install
 
-echo "pulled express \n" >> $log
+echo "pulled express" >> $log
 
-echo "rebooting \n" >> $log
+echo "rebooting" >> $log
 
-sudo reboot -f >> $log
+sudo /sbin/reboot -f >> $log
 
-echo "rebooted \n" >> $log
+echo "rebooted" >> $log
 
 
 # cd /home/odroid/navdroid/express

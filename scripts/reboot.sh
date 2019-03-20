@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo reboot -f
+sudo /sbin/reboot -f
