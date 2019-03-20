@@ -89,16 +89,29 @@ router.post('/update-daemon', (req, res, next) => {
       '/home/odroid/navdroid/express/scripts/update-daemon.sh',
       (error, stdout, stderr) => {
         if (error || stderr) {
-          const response = JSON.stringify(
-            generateResponseObject(
-              'ERROR',
-              'UIUPD_003',
-              'Failed to update the NavCoin daemon',
-              { error, stderr }
-            )
-          );
-          res.status(500).send(response);
-          return;
+          if (error.code == 1) {
+            const response = JSON.stringify(
+              generateResponseObject(
+                'ERROR',
+                'UIUPD_003',
+                'Already on the latest version',
+                { error, stderr }
+              )
+            );
+            res.status(500).send(response);
+            return;
+          } else {
+            const response = JSON.stringify(
+              generateResponseObject(
+                'ERROR',
+                'UIUPD_003',
+                'Failed to update the NavCoin daemon',
+                { error, stderr }
+              )
+            );
+            res.status(500).send(response);
+            return;
+          }
         }
         const response = JSON.stringify(
           generateResponseObject(
