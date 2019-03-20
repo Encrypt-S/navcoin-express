@@ -153,7 +153,7 @@ router.post('/update-ui', (req, res, next) => {
       generateResponseObject(
         'SUCCESS',
         'UPDATE_UI_001',
-        'Updating the NavDroid UI',
+        'Updating NavDroid UI',
       )
     );
     res.status(200).send(response);

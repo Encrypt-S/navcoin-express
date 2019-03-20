@@ -20,15 +20,14 @@ git pull >> $log
 
 echo "pulled express" >> $log
 
-echo "rebooting" >> $log
+echo "attempting to restart express" >> $log
 
-sudo /sbin/reboot -f >> $log
+cd /home/odroid/navdroid/express
+forever start ./bin/www >> $log
 
-echo "rebooted" >> $log
+echo "attempting to restart angular" >> $log
 
+cd /home/odroid/navdroid/angular
+forever start node_modules/@angular/cli/bin/ng serve --ssl true --proxy-config proxy.config.json --host 0.0.0.0  >> $log
 
-# cd /home/odroid/navdroid/express
-# forever start ./bin/www
-
-# cd /home/odroid/navdroid/angular
-# forever start node_modules/@angular/cli/bin/ng serve --ssl true --proxy-config proxy.config.json --host 0.0.0.0
+echo "script finished" >> $log
