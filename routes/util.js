@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
 const common = require('../lib/common');
 
 function generateResponseObject(type, code, message, data = {}) {
@@ -148,32 +148,30 @@ router.post('/update-ui', (req, res, next) => {
   }
 
   try {
-    exec(
-      '/home/odroid/navdroid/express/scripts/update-ui.sh',
-      (error, stdout, stderr) => {
-        if (error || stderr) {
-          const response = JSON.stringify(
-            generateResponseObject(
-              'ERROR',
-              'UIUPD_003',
-              'Failed to update the Stakebox UI',
-              { error, stderr }
-            )
-          );
-          res.status(500).send(response);
-          return;
-        }
-        const response = JSON.stringify(
-          generateResponseObject(
-            'SUCCESS',
-            'UIUPD_001',
-            'The Stakebox UI was successfully updated'
-          )
-        );
-        res.status(200).send(response);
-        return;
-      }
+
+    const response = JSON.stringify(
+      generateResponseObject(
+        'SUCCESS',
+        'UPDATE_UI_001',
+        'Updating the NavDroid UI',
+      )
     );
+    res.status(200).send(response);
+
+    const command = spawn('/home/odroid/navdroid/express/scripts/update-ui.sh');
+
+    command.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    command.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    command.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
