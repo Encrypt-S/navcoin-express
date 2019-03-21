@@ -85,50 +85,51 @@ router.post('/update-daemon', (req, res, next) => {
   }
 
   try {
-    exec(
-      '/home/odroid/navdroid/express/scripts/update-daemon.sh',
-      (error, stdout, stderr) => {
-        if (error || stderr) {
-          if (error.code == 1) {
-            const response = JSON.stringify(
-              generateResponseObject(
-                'ERROR',
-                'UIUPD_003',
-                'Already on the latest version',
-                { error, stderr }
-              )
-            );
-            res.status(500).send(response);
-            return;
-          } else {
-            const response = JSON.stringify(
-              generateResponseObject(
-                'ERROR',
-                'UIUPD_003',
-                'Failed to update the NavCoin daemon',
-                { error, stderr }
-              )
-            );
-            res.status(500).send(response);
-            return;
-          }
-        }
-        const response = JSON.stringify(
-          generateResponseObject(
-            'SUCCESS',
-            'UIUPD_001',
-            'The NavCoin daemon was successfully updated'
-          )
-        );
-        res.status(200).send(response);
-        return;
-      }
-    );
+    const command = spawn('/home/odroid/navdroid/express/scripts/update-daemon.sh');
+
+    command.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'UPDATE_NAVCOIN_001',
+          'Update NavCoin Successfully',
+          {data},
+        )
+      );
+      res.status(200).send(response);
+    });
+
+    command.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'UPDATE_NAVCOIN_002',
+          'Update script encountered an error',
+          {data},
+        )
+      );
+      res.status(200).send(response);
+    });
+
+    command.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+      const response = JSON.stringify(
+        generateResponseObject(
+          'ERROR',
+          'UPDATE_NAVCOIN_003',
+          'Update script exited',
+          {code},
+        )
+      );
+      res.status(200).send(response);
+    });
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
-        'DMNUPD_002',
+        'UPDATE_NAVCOIN_004',
         'Failed to update the NavCoin daemon',
         { err }
       )
@@ -265,7 +266,7 @@ router.post('/restart-daemon', (req, res, next) => {
       console.log(`stderr: ${data}`);
       const response = JSON.stringify(
         generateResponseObject(
-          'SUCCESS',
+          'ERROR',
           'RESTART_DAEMON_002',
           'There was an error restarting NavCoin',
           {data},
@@ -279,7 +280,7 @@ router.post('/restart-daemon', (req, res, next) => {
       console.log(`child process exited with code ${code}`);
       const response = JSON.stringify(
         generateResponseObject(
-          'SUCCESS',
+          'ERROR',
           'RESTART_DAEMON_003',
           'The process restarting NavCoin closed',
           {code},
