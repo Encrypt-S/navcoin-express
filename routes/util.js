@@ -106,9 +106,10 @@ router.post('/update-daemon', (req, res, next) => {
 
     command.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+      var response;
       switch(code) {
         case 1:
-          const response = JSON.stringify(
+          response = JSON.stringify(
             generateResponseObject(
               'SUCCESS',
               'UPDATE_NAVCOIN_003',
@@ -119,17 +120,18 @@ router.post('/update-daemon', (req, res, next) => {
           res.status(200).send(response);
           break;
         default:
-        const response = JSON.stringify(
-          generateResponseObject(
-            'ERROR',
-            'UPDATE_NAVCOIN_004',
-            'Update script exited',
-            {code},
-          )
-        );
-        res.status(200).send(response);
-        break;
+          response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'UPDATE_NAVCOIN_004',
+              'Update script exited',
+              {code},
+            )
+          );
+          break;
       }
+      res.status(200).send(response);
+
     });
   } catch (err) {
     const response = JSON.stringify(
@@ -274,9 +276,10 @@ router.post('/restart-daemon', (req, res, next) => {
 
     command.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+      var response;
       switch(code) {
         case 1:
-          const response = JSON.stringify(
+          response = JSON.stringify(
             generateResponseObject(
               'SUCCESS',
               'RESTART_DAEMON_003',
@@ -284,20 +287,19 @@ router.post('/restart-daemon', (req, res, next) => {
               {code},
             )
           );
-          res.status(200).send(response);
           break;
         default:
-        const response = JSON.stringify(
-          generateResponseObject(
-            'ERROR',
-            'RESTART_DAEMON_004',
-            'Update script exited',
-            {code},
-          )
-        );
-        res.status(200).send(response);
-        break;
+          response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'RESTART_DAEMON_004',
+              'Update script exited',
+              {code},
+            )
+          );
+          break;
       }
+      res.status(200).send(response);
     });
 
   } catch (err) {
