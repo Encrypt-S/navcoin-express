@@ -89,15 +89,6 @@ router.post('/update-daemon', (req, res, next) => {
 
     command.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'UPDATE_NAVCOIN_001',
-          'Update NavCoin Successfully',
-          {data},
-        )
-      );
-      res.status(200).send(response);
     });
 
     command.stderr.on('data', (data) => {
@@ -115,21 +106,36 @@ router.post('/update-daemon', (req, res, next) => {
 
     command.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      const response = JSON.stringify(
-        generateResponseObject(
-          'ERROR',
-          'UPDATE_NAVCOIN_003',
-          'Update script exited',
-          {code},
-        )
-      );
-      res.status(200).send(response);
+      switch(code) {
+        case 1:
+          const response = JSON.stringify(
+            generateResponseObject(
+              'SUCCESS',
+              'UPDATE_NAVCOIN_003',
+              'Update script exited successfully',
+              {code},
+            )
+          );
+          res.status(200).send(response);
+          break;
+        default:
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'UPDATE_NAVCOIN_004',
+            'Update script exited',
+            {code},
+          )
+        );
+        res.status(200).send(response);
+        break;
+      }
     });
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
-        'UPDATE_NAVCOIN_004',
+        'UPDATE_NAVCOIN_005',
         'Failed to update the NavCoin daemon',
         { err }
       )
@@ -250,16 +256,6 @@ router.post('/restart-daemon', (req, res, next) => {
 
     command.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'RESTART_DAEMON_001',
-          'NavCoin is restarting',
-          {data},
-        )
-      );
-      res.status(200).send(response);
-      return
     });
 
     command.stderr.on('data', (data) => {
@@ -278,23 +274,37 @@ router.post('/restart-daemon', (req, res, next) => {
 
     command.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      const response = JSON.stringify(
-        generateResponseObject(
-          'ERROR',
-          'RESTART_DAEMON_003',
-          'The process restarting NavCoin closed',
-          {code},
-        )
-      );
-      res.status(200).send(response);
-      return
+      switch(code) {
+        case 1:
+          const response = JSON.stringify(
+            generateResponseObject(
+              'SUCCESS',
+              'RESTART_DAEMON_003',
+              'Update script exited successfully',
+              {code},
+            )
+          );
+          res.status(200).send(response);
+          break;
+        default:
+        const response = JSON.stringify(
+          generateResponseObject(
+            'ERROR',
+            'RESTART_DAEMON_004',
+            'Update script exited',
+            {code},
+          )
+        );
+        res.status(200).send(response);
+        break;
+      }
     });
 
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
-        'RESTART_DAEMON_004',
+        'RESTART_DAEMON_005',
         'Failed to restart NavCoin',
         { err }
       )
