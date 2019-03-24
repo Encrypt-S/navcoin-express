@@ -78,7 +78,7 @@ router.post('/update-daemon', (req, res, next) => {
   var verified = common.checkPassword(req.body.password);
   if (!verified) {
     const response = JSON.stringify(
-      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', { test: 'TEST_001'})
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', { test: 'TEST_001A'})
     );
     res.status(500).send(response);
     return;
