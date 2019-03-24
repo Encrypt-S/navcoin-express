@@ -142,28 +142,46 @@ router.post('/update-ui', (req, res, next) => {
 
   try {
 
-    const response = JSON.stringify(
-      generateResponseObject(
-        'SUCCESS',
-        'UPDATE_UI_001',
-        'Updating NavDroid UI',
-      )
+    exec(
+      '/home/odroid/navdroid/express/scripts/update-ui.sh',
+      (error, stdout, stderr) => {
+        if (error || stderr) {
+          const response = JSON.stringify(
+            generateResponseObject(
+              'ERROR',
+              'UPDATE_UI_001',
+              'Failed to git update',
+              { error, stderr }
+            )
+          );
+          res.status(500).send(response);
+          return;
+        }
+        const response = JSON.stringify(
+          generateResponseObject(
+            'SUCCESS',
+            'UPDATE_UI_001',
+            'Updating NavDroid UI',
+          )
+        );
+        res.status(200).send(response);
+
+        const command = spawn('/home/odroid/navdroid/express/scripts/restart-web.sh');
+
+        command.stdout.on('data', (data) => {
+          console.log(`stdout: ${data}`);
+        });
+
+        command.stderr.on('data', (data) => {
+          console.log(`stderr: ${data}`);
+        });
+
+        command.on('close', (code) => {
+          console.log(`child process exited with code ${code}`);
+        });
+
+      }
     );
-    res.status(200).send(response);
-
-    const command = spawn('/home/odroid/navdroid/express/scripts/update-ui.sh');
-
-    command.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
-    });
-
-    command.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
-    });
-
-    command.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-    });
 
   } catch (err) {
     const response = JSON.stringify(
