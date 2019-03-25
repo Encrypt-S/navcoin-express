@@ -200,7 +200,7 @@ router.post('/update-ui', (req, res, next) => {
     );
 
   } catch (err) {
-    console.log(err);
+    console.log('error', err);
     const response = JSON.stringify(
       generateResponseObject(
         'ERROR',
