@@ -422,15 +422,16 @@ router.post('/backup-wallet', (req, res, next) => {
 
   try {
     //run the backup proceedure
-    const response = JSON.stringify(
-      generateResponseObject(
-        'SUCCESS',
-        'BACKUP_001',
-        'The wallet was succesfully backed up'
-      )
-    );
-    res.status(200).send(response);
+    var filePath = '/home/odroid/.navcoin4/wallet.dat';
+
+    res.writeHead(200, {
+          "Content-Type": "application/octet-stream",
+          "Content-Disposition": "attachment; filename=wallet.dat"
+        });
+
+    fs.createReadStream(filePath).pipe(res);
     return;
+
   } catch (err) {
     const response = JSON.stringify(
       generateResponseObject(
