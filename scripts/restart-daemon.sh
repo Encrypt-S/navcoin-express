@@ -5,3 +5,5 @@ installed="${installed:30}"
 
 /home/odroid/navdroid/navcoin-${installed}/bin/navcoin-cli stop
 /home/odroid/navdroid/navcoin-${installed}/bin/navcoind &
+
+exit 0

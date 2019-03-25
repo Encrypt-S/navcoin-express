@@ -74,3 +74,5 @@ echo "Restarting navcoin daemon"
 /home/odroid/navdroid/navcoin-${tag}/bin/navcoind &
 echo "NavCoin has successfully updated to the latest version"
 echo "{\"last_run\":\"${now}\",\"success\":true,\"code\":\"UPDATE_INSTALLED\"}" > /home/odroid/navdroid/express/log/update.json
+
+exit 0
