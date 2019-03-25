@@ -1,9 +1,16 @@
 #!/bin/bash
 
-forever stopall
+log=/home/odroid/navdroid/express/log/update-ui.log
+touch $log
+chmod 777 $log
+
+now=$(date +"%m-%d-%Y %T")
+echo "${now} - restart ui" >> $log
+
+forever stopall >> $log
 
 cd /home/odroid/navdroid/express
-forever start ./bin/www
+forever start ./bin/www >> $log
 
 cd /home/odroid/navdroid/angular
-forever start node_modules/@angular/cli/bin/ng serve --ssl true --proxy-config proxy.config.json --host 0.0.0.0
+forever start node_modules/@angular/cli/bin/ng serve --ssl true --proxy-config proxy.config.json --host 0.0.0.0 >> $log

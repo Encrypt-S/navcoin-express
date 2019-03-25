@@ -5,8 +5,7 @@ touch $log
 chmod 777 $log
 
 now=$(date +"%m-%d-%Y %T")
-
-echo "${now} - updating ui" >> $log
+echo "${now} - update ui" >> $log
 
 cd /home/odroid/navdroid/angular
 git pull
