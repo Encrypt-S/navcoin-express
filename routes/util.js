@@ -158,6 +158,23 @@ router.post('/update-ui', (req, res, next) => {
           return;
         }
         console.log('stdout', stdout);
+
+        var count = (stdout.match(/Already up to date./g) || []).length;
+
+        console.log('count', count);
+
+        if (count == 2) {
+          const response = JSON.stringify(
+            generateResponseObject(
+              'SUCCESS',
+              'UPDATE_UI_001A',
+              'NavDroid UI is already up to date',
+            )
+          );
+          res.status(200).send(response);
+          return;
+        }
+
         const response = JSON.stringify(
           generateResponseObject(
             'SUCCESS',
