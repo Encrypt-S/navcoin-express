@@ -145,13 +145,13 @@ router.post('/update-ui', (req, res, next) => {
     exec(
       '/home/odroid/navdroid/express/scripts/update-ui.sh',
       (error, stdout, stderr) => {
-        if (error || stderr) {
+        if (error) {
           const response = JSON.stringify(
             generateResponseObject(
               'ERROR',
               'UPDATE_UI_001',
               'Failed to git update',
-              { error, stderr }
+              { error }
             )
           );
           res.status(500).send(response);
