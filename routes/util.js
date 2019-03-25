@@ -93,15 +93,6 @@ router.post('/update-daemon', (req, res, next) => {
 
     command.stderr.on('data', (data) => {
       console.log(`stderr: ${data}`);
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'UPDATE_NAVCOIN_002',
-          'Update script encountered an error',
-          {data},
-        )
-      );
-      res.status(200).send(response);
     });
 
     command.on('close', (code) => {
