@@ -157,7 +157,7 @@ router.post('/update-ui', (req, res, next) => {
           res.status(500).send(response);
           return;
         }
-        
+
         var count = (stdout.match(/Already up to date./g) || []).length;
 
         if (count == 2) {
@@ -205,6 +205,53 @@ router.post('/update-ui', (req, res, next) => {
         'ERROR',
         'UIUPD_002',
         'Failed to update the NavDroid Interface',
+        { err }
+      )
+    );
+    res.status(500).send(response);
+  }
+});
+
+router.post('/restart-web', (req, res, next) => {
+  var verified = common.checkPassword(req.body.password);
+  if (!verified) {
+    const response = JSON.stringify(
+      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
+    );
+    res.status(500).send(response);
+    return;
+  }
+
+  try {
+    const response = JSON.stringify(
+      generateResponseObject(
+        'SUCCESS',
+        'RESTART_WEB_001',
+        'Restarting NavDroid UI',
+      )
+    );
+    res.status(200).send(response);
+
+    const command = spawn('/home/odroid/navdroid/express/scripts/restart-web.sh');
+
+    command.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
+
+    command.stderr.on('data', (data) => {
+      console.log(`stderr: ${data}`);
+    });
+
+    command.on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
+    });
+
+  } catch (err) {
+    const response = JSON.stringify(
+      generateResponseObject(
+        'ERROR',
+        'RESTART_WEB_002',
+        'Failed to restart the Stakebox',
         { err }
       )
     );
