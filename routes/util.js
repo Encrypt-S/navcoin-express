@@ -318,11 +318,24 @@ router.post('/restart-daemon', (req, res, next) => {
   }
 
   try {
-
+    var responded = false;
     const command = spawn('/home/odroid/navdroid/express/scripts/restart-daemon.sh');
 
     command.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
+      if (data.indexOf('NavCoin server starting') != -1 && !responded) {
+        responded = true;
+        const response = JSON.stringify(
+          generateResponseObject(
+            'SUCCESS',
+            'RESTART_DAEMON_001',
+            'NavCoin is restarting',
+            {data},
+          )
+        );
+        res.status(200).send(response);
+        return
+      }
     });
 
     command.stderr.on('data', (data) => {
@@ -341,16 +354,6 @@ router.post('/restart-daemon', (req, res, next) => {
 
     command.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'RESTART_DAEMON_003',
-          'Restart script exited successfully',
-          {code},
-        )
-      );
-      res.status(200).send(response);
-      return
     });
 
   } catch (err) {
