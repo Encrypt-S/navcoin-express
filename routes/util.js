@@ -157,11 +157,8 @@ router.post('/update-ui', (req, res, next) => {
           res.status(500).send(response);
           return;
         }
-        console.log('stdout', stdout);
-
+        
         var count = (stdout.match(/Already up to date./g) || []).length;
-
-        console.log('count', count);
 
         if (count == 2) {
           const response = JSON.stringify(
