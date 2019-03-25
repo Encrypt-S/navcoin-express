@@ -94,13 +94,26 @@ router.post('/update-daemon', (req, res, next) => {
         const response = JSON.stringify(
           generateResponseObject(
             'SUCCESS',
-            'RESTART_DAEMON_001',
+            'UPDATE_DAEMON_001',
             'NavCoin was successfully updated, restarting',
-            {data},
+            { code: 0 }
           )
         );
         res.status(200).send(response);
-        return
+
+        const command = spawn('/home/odroid/navdroid/express/scripts/restart-web.sh');
+
+        command.stdout.on('data', (data) => {
+          console.log(`stdout: ${data}`);
+        });
+
+        command.stderr.on('data', (data) => {
+          console.log(`stderr: ${data}`);
+        });
+
+        command.on('close', (code) => {
+          console.log(`child process exited with code ${code}`);
+        });
       }
     });
 
