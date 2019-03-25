@@ -97,11 +97,34 @@ router.post('/update-daemon', (req, res, next) => {
 
     command.on('close', (code) => {
       console.log(`child process exited with code ${code}`);
+
+      var type = 'ERROR';
+      var message = 'Updating NavCoin was unsuccessful';
+      switch (code) {
+        case: 0
+          type = 'SUCCESS';
+          message = 'NavCoin was successfully updated';
+          break;
+        case: 1
+          message = 'NavCoin update failed, invalid release name';
+          break;
+        case: 2
+          message = 'NavCoin update failed, release not found';
+          break;
+        case: 3
+          type = 'SUCCESS'
+          message = 'NavCoin update failed, already at latest version';
+          break;
+        case: 4
+          message = 'NavCoin update failed, download failed';
+          break;
+      }
+
       const response = JSON.stringify(
         generateResponseObject(
-          'SUCCESS',
+          type,
           'RESTART_DAEMON_003',
-          'Restart script exited successfully',
+          message,
           {code},
         )
       );
