@@ -380,6 +380,7 @@ router.post('/restart-daemon', (req, res, next) => {
 
     command.stderr.on('data', (data) => {
       console.log(`stderr: ${data}`);
+      responded = true;
       const response = JSON.stringify(
         generateResponseObject(
           'ERROR',
