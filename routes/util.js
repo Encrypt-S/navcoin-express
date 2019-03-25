@@ -86,9 +86,22 @@ router.post('/update-daemon', (req, res, next) => {
 
   try {
     const command = spawn('/home/odroid/navdroid/express/scripts/update-daemon.sh');
-
+    var responded = false;
     command.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
+      if (data.indexOf('NavCoin server starting') != -1 && !responded) {
+        responded = true;
+        const response = JSON.stringify(
+          generateResponseObject(
+            'SUCCESS',
+            'RESTART_DAEMON_001',
+            'NavCoin was successfully updated, restarting',
+            {data},
+          )
+        );
+        res.status(200).send(response);
+        return
+      }
     });
 
     command.stderr.on('data', (data) => {
@@ -103,7 +116,7 @@ router.post('/update-daemon', (req, res, next) => {
       switch (code) {
         case 0:
           type = 'SUCCESS';
-          message = 'NavCoin was successfully updated';
+          message = 'NavCoin was successfully updated, restarting';
           break;
         case 1:
           message = 'NavCoin update failed, invalid release name';
@@ -113,7 +126,7 @@ router.post('/update-daemon', (req, res, next) => {
           break;
         case 3:
           type = 'SUCCESS'
-          message = 'NavCoin update failed, already at latest version';
+          message = 'NavCoin is already up to date';
           break;
         case 4:
           message = 'NavCoin update failed, download failed';
