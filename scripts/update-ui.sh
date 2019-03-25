@@ -9,9 +9,9 @@ now=$(date +"%m-%d-%Y %T")
 echo "${now} - updating ui" >> $log
 
 cd /home/odroid/navdroid/angular
-git pull >> $log
+git pull
 # npm install
 
 cd /home/odroid/navdroid/express
-git pull >> $log
+git pull
 # npm install
