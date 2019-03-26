@@ -12,7 +12,8 @@ time=$(date +"%s")
 
 FILE=$1
 
-mv /home/odroid/.navcoin4/wallet.dat /home/odroid/.navcoin4/${time}_wallet.dat
+# possibly backup old wallet.dat file
+# mv /home/odroid/.navcoin4/wallet.dat /home/odroid/.navcoin4/${time}_wallet.dat
 
 cp $FILE /home/odroid/.navcoin4/wallet.dat
 
