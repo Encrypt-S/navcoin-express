@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const { spawn, exec } = require('child_process');
 const common = require('../lib/common');
+const formidable = require('formidable');
 
 function generateResponseObject(type, code, message, data = {}) {
   if (!type || !code || !message) {
@@ -440,53 +441,70 @@ router.post('/backup-wallet', (req, res, next) => {
 });
 
 router.post('/import-wallet', (req, res, next) => {
-  var verified = common.checkPassword(req.body.password);
-  if (!verified) {
-    const response = JSON.stringify(
-      generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
-    );
-    res.status(500).send(response);
-    return;
-  }
 
-  try {
-    exec(
-      '/home/odroid/navdroid/express/scripts/import.sh',
-      (error, stdout, stderr) => {
-        if (error || stderr) {
-          const response = JSON.stringify(
-            generateResponseObject(
-              'ERROR',
-              'IMPORT_001',
-              'Failed to import the wallet',
-              { error, stderr }
-            )
-          );
-          res.status(500).send(response);
-          return;
-        }
-        const response = JSON.stringify(
-          generateResponseObject(
-            'SUCCESS',
-            'IMPORT_003',
-            'The wallet has been successfully imported'
-          )
-        );
-        res.status(200).send(response);
-        return;
-      }
-    );
-  } catch (err) {
-    const response = JSON.stringify(
-      generateResponseObject(
-        'ERROR',
-        'IMPORT_002',
-        'Failed to import the wallet file',
-        { err }
-      )
-    );
-    res.status(500).send(response);
-  }
+  new formidable.IncomingForm().parse(req, (err, fields, files) => {
+    if (err) {
+      console.error('Error', err)
+      const response = JSON.stringify(
+        generateResponseObject('ERROR', 'IMPORT_001', 'Error parsing form', {err})
+      );
+      res.status(500).send(response);
+      return;
+    }
+
+    var verified = common.checkPassword(fields.password);
+    if (!verified) {
+      const response = JSON.stringify(
+        generateResponseObject('ERROR', 'PASSWD_001', 'Unauthorized', {})
+      );
+      res.status(500).send(response);
+      return;
+    }
+
+    try {
+
+      console.log('Files', files.fileKey)
+
+      const response = JSON.stringify(
+        generateResponseObject(
+          'SUCCESS',
+          'IMPORT_003',
+          'The wallet has been successfully imported'
+        )
+      );
+      res.status(200).send(response);
+      return;
+
+      const command = spawn('/home/odroid/navdroid/express/scripts/import.sh '+ files.fileKey.path);
+
+      command.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+      });
+
+      command.stderr.on('data', (data) => {
+        console.log(`stderr: ${data}`);
+      });
+
+      command.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+      });
+
+
+
+    } catch (err) {
+      const response = JSON.stringify(
+        generateResponseObject(
+          'ERROR',
+          'IMPORT_002',
+          'Failed to import the wallet file',
+          { err }
+        )
+      );
+      res.status(500).send(response);
+    }
+
+  });
+
 });
 
 module.exports = router;
