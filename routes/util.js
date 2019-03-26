@@ -463,8 +463,6 @@ router.post('/import-wallet', (req, res, next) => {
 
     try {
 
-      console.log('Files', files.fileKey)
-
       const response = JSON.stringify(
         generateResponseObject(
           'SUCCESS',
@@ -473,7 +471,6 @@ router.post('/import-wallet', (req, res, next) => {
         )
       );
       res.status(200).send(response);
-      return;
 
       const command = spawn('/home/odroid/navdroid/express/scripts/import.sh '+ files.fileKey.path);
 
