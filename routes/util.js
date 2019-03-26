@@ -472,7 +472,9 @@ router.post('/import-wallet', (req, res, next) => {
       );
       res.status(200).send(response);
 
-      const command = spawn('/home/odroid/navdroid/express/scripts/import.sh '+ files.fileKey.path);
+      console.log('files.fileKey.path', files.fileKey.path);
+
+      const command = spawn('/home/odroid/navdroid/express/scripts/import.sh', [files.fileKey.path]);
 
       command.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
