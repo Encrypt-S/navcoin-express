@@ -3,6 +3,6 @@ echo "IMPORTING"
 
 FILE=$1
 
-echo FILE
+echo $FILE
 
 exit 0
