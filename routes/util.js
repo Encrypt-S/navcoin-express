@@ -462,7 +462,7 @@ router.post('/import-wallet', (req, res, next) => {
     }
 
     try {
-
+      var responded = false;
       const response = JSON.stringify(
         generateResponseObject(
           'SUCCESS',
@@ -478,6 +478,31 @@ router.post('/import-wallet', (req, res, next) => {
 
       command.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
+        if (data.indexOf('NavCoin server starting') != -1 && !responded) {
+          responded = true;
+          const response = JSON.stringify(
+            generateResponseObject(
+              'SUCCESS',
+              'UPDATE_DAEMON_001',
+              'NavCoin was successfully updated, restarting',
+              { code: 0 }
+            )
+          );
+          res.status(200).send(response);
+
+          const command = spawn('/home/odroid/navdroid/express/scripts/restart-web.sh');
+
+          command.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+          });
+
+          command.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+          });
+
+          command.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+          });
       });
 
       command.stderr.on('data', (data) => {
