@@ -463,14 +463,6 @@ router.post('/import-wallet', (req, res, next) => {
 
     try {
       var responded = false;
-      const response = JSON.stringify(
-        generateResponseObject(
-          'SUCCESS',
-          'IMPORT_003',
-          'The wallet has been successfully imported'
-        )
-      );
-      res.status(200).send(response);
 
       console.log('files.fileKey.path', files.fileKey.path);
 
@@ -483,7 +475,7 @@ router.post('/import-wallet', (req, res, next) => {
           const response = JSON.stringify(
             generateResponseObject(
               'SUCCESS',
-              'UPDATE_DAEMON_001',
+              'IMPORT_WALLET_001',
               'NavCoin was successfully updated, restarting',
               { code: 0 }
             )
@@ -503,6 +495,7 @@ router.post('/import-wallet', (req, res, next) => {
           command.on('close', (code) => {
             console.log(`child process exited with code ${code}`);
           });
+        }
       });
 
       command.stderr.on('data', (data) => {
@@ -512,7 +505,6 @@ router.post('/import-wallet', (req, res, next) => {
       command.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
       });
-
 
 
     } catch (err) {
