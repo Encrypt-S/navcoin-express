@@ -5,6 +5,10 @@
 ## OS customizations
 #
 
+# update
+apt-get -y update
+apt-get -y upgrade
+
 # install packages
 apt-get install sysstat # monitor with iostat
 
