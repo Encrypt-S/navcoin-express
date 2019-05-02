@@ -29,3 +29,6 @@ update-alternatives --set editor /usr/bin/vim.basic
 # this script points to a static drive variable and may break at some point
 chmod +x fs_resize.sh
 bash -x fs_resize.sh
+
+# clear bash history
+cat /dev/null > ~/.bash_history
