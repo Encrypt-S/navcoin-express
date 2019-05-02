@@ -8,6 +8,9 @@
 # install packages
 apt-get install sysstat # monitor with iostat
 
+# set timezone to UTC
+timedatectl set-timezone UTC
+
 # fix date/time with ntpdate
 service ntp stop && ntpdate -u time.nist.gov
 service ntp start
