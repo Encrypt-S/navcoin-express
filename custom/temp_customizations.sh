@@ -1,20 +1,17 @@
 #!/bin/sh
 #
-## Temporary
-##
-## OS customizations
-#
-
-#!/bin/bash
-#
 # configure navdroid
 #
+VERSION="4.5.2"
 
 # set timezone to UTC
 timedatectl set-timezone UTC
 
 # add odroid user
 useradd -m -p Om16ojfOaLNA6 -s /bin/bash odroid
+
+# create odroid cron
+su - odroid -c '(crontab -l 2>/dev/null; echo "@reboot /home/odroid/navdroid/express/scripts/startup.sh") | crontab -'
 
 # add repo
 add-apt-repository -y ppa:bitcoin/bitcoin
@@ -75,6 +72,14 @@ ufw allow https
 ufw allow from any proto tcp port 4200
 ufw enable
 
+# disable services
+systemctl disable alsa-restore
+systemctl disable cups
+systemctl disable cups-browsed
+systemctl disable openvpn
+#systemctl disable wpa_supplicant
+
+
 # expand microsd filesystem on next boot
 # this script points to a static drive variable and may break at some point
 #chmod +x fs_resize_navdroid.sh
@@ -92,7 +97,7 @@ cd navcoin-core
 make -j3
 
 # checkinstall to generate dpkg
-checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion 4.5.2 --requires nginx,build-essential,libcurl3-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp
+checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires nginx,build-essential,libcurl3-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp
 
 # clean up
 make clean
