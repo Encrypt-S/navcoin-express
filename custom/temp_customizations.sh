@@ -5,7 +5,10 @@
 
 ## VERSION determines the deb package build version identifier and should be updated to match the desired release
 VERSION="4.5.2"
+## DEBUG set to yes|no. yes configures bootstrap to download from specified URL
 DEBUG="no"
+## Bootstrap URL
+BURL='https://192.168.0.10/bootstrap-navcoin_mainnet.tar'
 
 # set timezone to UTC
 timedatectl set-timezone UTC
@@ -123,7 +126,7 @@ make clean
 cd /tmp
 if [ DEBUG = yes ]; then
 	# local boostrap
-	wget --no-check-certificate https://192.168.0.10/bootstrap-navcoin_mainnet.tar
+	wget --no-check-certificate $BURL
 else
 	# remote bootstrap
 	wget https://s3.amazonaws.com/navcoin-bootstrap/bootstrap-navcoin_mainnet.tar
