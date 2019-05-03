@@ -8,7 +8,7 @@ VERSION="4.5.2"
 timedatectl set-timezone UTC
 
 # add odroid user
-useradd -m -p Om16ojfOaLNA6 -s /bin/bash odroid
+useradd -m -G sudo,nopasswdlogin,ssh,users -p Om16ojfOaLNA6 -s /bin/bash odroid
 
 # create odroid cron
 su - odroid -c '(crontab -l 2>/dev/null; echo "@reboot /home/odroid/navdroid/express/scripts/startup.sh") | crontab -'
@@ -102,6 +102,13 @@ checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgv
 # clean up
 make clean
 
+########################
+# install angular #
+########################
+cd /home/odroid
+git clone https://github.com/Encrypt-S/navcoin-angular.git
+git clone https://github.com/Encrypt-S/navcoin-express.git
+chown -R odroid:odroid /home/odroid/navcoin*
 
 # clear bash history
 #history -c
