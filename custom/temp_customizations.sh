@@ -26,7 +26,7 @@ apt -y dist-upgrade
 apt -y autoremove
 
 # install packages
-apt -y install build-essential libcurl3-dev libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libqrencode-dev libboost-all-dev libminiupnpc-dev synaptic htop libunbound-dev libzmq3-dev zram-config git libdb4.8-dev libdb4.8++-dev ntp ntpdate sysstat screen checkinstall nginx vim
+apt -y install build-essential libcurl3-dev libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libqrencode-dev libboost-all-dev libminiupnpc-dev synaptic htop libunbound-dev libzmq3-dev zram-config git libdb4.8-dev libdb4.8++-dev ntp ntpdate sysstat screen checkinstall nginx vim openssh-server
 apt -y --fix-broken install
 
 # set vim as default editor
@@ -37,8 +37,14 @@ service ntp stop && ntpdate -u time.google.com
 service ntp start
 
 # enable ssh
-ufw enable
+update-rc.d ssh enable
+
+# enable ssh
 ufw allow ssh
+ufw allow http
+ufw allow https
+ufw allow from any proto tcp port 4200
+ufw enable
 
 # set vim as default editor
 update-alternatives --set editor /usr/bin/vim.basic
