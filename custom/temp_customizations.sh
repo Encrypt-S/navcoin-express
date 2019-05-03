@@ -25,8 +25,37 @@ apt -y upgrade
 apt -y dist-upgrade
 apt -y autoremove
 
+PKGLIST="build-essential\
+       	libcurl3-dev\
+	libtool\
+	autotools-dev\
+	automake\
+	pkg-config\
+	libssl-dev\
+	libevent-dev\
+	bsdmainutils\
+	libqrencode-dev\
+	libboost-all-dev\
+	libminiupnpc-dev\
+	synaptic htop\
+	libunbound-dev\
+	libzmq3-dev\
+	zram-config\
+	git\
+	libdb4.8-dev\
+	libdb4.8++-dev\
+	ntp\
+	ntpdate\
+	sysstat\
+	screen\
+	checkinstall\
+	nginx\
+	vim\
+	openssh-server\
+	ufw"
+
 # install packages
-apt -y install build-essential libcurl3-dev libtool autotools-dev automake pkg-config libssl-dev libevent-dev bsdmainutils libqrencode-dev libboost-all-dev libminiupnpc-dev synaptic htop libunbound-dev libzmq3-dev zram-config git libdb4.8-dev libdb4.8++-dev ntp ntpdate sysstat screen checkinstall nginx vim openssh-server ufw
+apt -y install $PKGLIST
 apt -y --fix-broken install
 
 # set vim as default editor
