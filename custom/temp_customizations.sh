@@ -10,6 +10,7 @@ DEBUG="no"
 ## Bootstrap URL
 BURL='https://192.168.0.10/bootstrap-navcoin_mainnet.tar'
 
+
 # set timezone to UTC
 timedatectl set-timezone UTC
 
@@ -148,3 +149,5 @@ chown -R odroid:odroid /home/odroid/navcoin*
 #history -c
 cat /dev/null > ~/.bash_history
 
+# clear root password and thus disable ssh login
+passwd -d root
