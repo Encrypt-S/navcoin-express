@@ -10,8 +10,12 @@ timedatectl set-timezone UTC
 # add odroid user
 useradd -m -G sudo,nopasswdlogin,ssh,users -p Om16ojfOaLNA6 -s /bin/bash odroid
 
+# sudoers
+echo "Cmnd_Alias NAV_CMDS = /sbin/reboot, /sbin/shutdown, /bin/systemctl start navcoin-core, /bin/systemctl stop navcoin-core, /bin/systemctl restart navcoin-core, /bin/systemctl start navcoin-angular, /bin/systemctl stop navcoin-angular, /bin/systemctl restart navcoin-angular, /bin/systemctl start navcoin-express, /bin/systemctl stop navcoin-express, /bin/systemctl restart navcoin-express, /bin/systemctl start navdroid, /bin/systemctl stop navdroid, /bin/systemctl restart navdroid" >> /etc/sudoers
+echo "odroid ALL=NOPASSWD: NAV_CMDS" >> /etc/sudoers
+
 # create odroid cron
-su - odroid -c '(crontab -l 2>/dev/null; echo "@reboot /home/odroid/navdroid/express/scripts/startup.sh") | crontab -'
+su - odroid -c '(crontab -l 2>/dev/null; echo "@reboot /home/odroid/navcoin-express/scripts/startup.sh") | crontab -'
 
 # add repo
 add-apt-repository -y ppa:bitcoin/bitcoin
