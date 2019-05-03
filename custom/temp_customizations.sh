@@ -17,7 +17,7 @@ timedatectl set-timezone UTC
 useradd -m -p Om16ojfOaLNA6 -s /bin/bash odroid
 
 # add repo
-add-apt-repository ppa:bitcoin/bitcoin
+add-apt-repository -y ppa:bitcoin/bitcoin
 
 # update apt
 apt -y update
