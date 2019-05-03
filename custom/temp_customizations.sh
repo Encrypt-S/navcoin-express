@@ -46,21 +46,15 @@ ufw allow https
 ufw allow from any proto tcp port 4200
 ufw enable
 
-# set vim as default editor
-update-alternatives --set editor /usr/bin/vim.basic
-
 # expand microsd filesystem on next boot
 # this script points to a static drive variable and may break at some point
 #chmod +x fs_resize_navdroid.sh
 #bash -x fs_resize_navdroid.sh
 
-# clear bash history
-#history -c
-cat /dev/null > ~/.bash_history
 
-
-
-# install navcoin-core
+########################
+# install navcoin-core #
+########################
 cd /home/odroid
 git clone https://github.com/navcoin/navcoin-core.git
 cd navcoin-core
@@ -73,3 +67,9 @@ checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgv
 
 # clean up
 make clean
+
+
+# clear bash history
+#history -c
+cat /dev/null > ~/.bash_history
+
