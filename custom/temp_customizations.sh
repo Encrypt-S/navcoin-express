@@ -1,8 +1,11 @@
 #!/bin/sh
 #
-# configure navdroid
-#
+## configure navdroid
+##
+
+## VERSION determines the deb package build version identifier and should be updated to match the desired release
 VERSION="4.5.2"
+DEBUG="no"
 
 # set timezone to UTC
 timedatectl set-timezone UTC
@@ -53,11 +56,21 @@ PKGLIST="build-essential\
 	nginx\
 	vim\
 	openssh-server\
-	ufw"
+	ufw\
+	libssl1.0-dev\
+	nodejs\
+	nodejs-dev\
+	node-gyp\
+	curl\
+	npm"
 
 # install packages
 apt -y install $PKGLIST
 apt -y --fix-broken install
+
+# install npm packages
+npm install pm2 -g
+npm install forever -g
 
 # set vim as default editor
 update-alternatives --set editor /usr/bin/vim.basic
@@ -69,7 +82,7 @@ service ntp start
 # enable ssh
 update-rc.d ssh enable
 
-# enable ssh
+# configure ufw firewall
 ufw allow ssh
 ufw allow http
 ufw allow https
@@ -105,6 +118,20 @@ checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgv
 
 # clean up
 make clean
+
+# bootstrap
+cd /tmp
+if [ DEBUG = yes ]; then
+	# local boostrap
+	wget --no-check-certificate https://192.168.0.10/bootstrap-navcoin_mainnet.tar
+else
+	# remote bootstrap
+	wget https://s3.amazonaws.com/navcoin-bootstrap/bootstrap-navcoin_mainnet.tar
+fi
+
+mkdir /home/odroid/.navcoin4 && chown odroid:odroid /home/odroid/.navcoin4
+tar -C /home/odroid/.navcoin4/ -xf bootstrap-navcoin_mainnet.tar && rm -f bootstrap_navcoin_mainnet.tar
+chown -R odroid:odroid /home/odroid/.navcoin4
 
 ########################
 # install angular #
