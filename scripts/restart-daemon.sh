@@ -2,8 +2,10 @@
 
 echo "sleeping for 30s..."
 echo
-sleep 30s
 
 sudo /bin/systemctl restart navcoin
+
+echo "DONE"
+echo
 
 exit 0
