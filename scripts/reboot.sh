@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log=/home/odroid/navdroid/express/log/reboot.log
+log=/opt/navdroid/express/log/reboot.log
 touch $log
 chmod 777 $log
 
