@@ -21,9 +21,9 @@ cp $FILE /home/odroid/.navcoin4/wallet.dat
 
 sudo /bin/systemctl stop navcoin
 
-echo "sleeping for 30s..."
+echo "sleeping for 10s..."
 echo
-sleep 30s
+sleep 10
 
 sudo /bin/systemctl start navcoin
 

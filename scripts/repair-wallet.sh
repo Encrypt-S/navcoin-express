@@ -2,14 +2,13 @@
 
 sudo /bin/systemctl stop navcoin
 
-echo "sleeping for 30s..."
+echo "sleeping for 10s..."
 echo
-sleep 30s
+sleep 10s
 
-sudo /usr/local/bin/navcoind -zapwallettxes=1 &
+sudo /bin/systemctl start navcoin-repair
 
 echo "DONE"
 echo
-
 
 exit 0

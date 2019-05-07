@@ -1,10 +1,16 @@
 #!/bin/bash
 
-installed=$(find /home/odroid/navdroid -type d -maxdepth 1 -name 'navcoin-*')
-installed="${installed:30}"
+sudo /bin/systemctl stop navcoin
+sudo /bin/systemctl stop navcoin-repair
 
-/home/odroid/navdroid/navcoin-${installed}/bin/navcoin-cli stop
-/home/odroid/navdroid/navcoin-${installed}/bin/navcoind &
+sleep 10
+
+sudo /bin/systemctl start navcoin
+
+echo "DONE"
+echo
+
+# modify below here
 
 forever stopall
 
