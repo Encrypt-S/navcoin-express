@@ -127,7 +127,7 @@ cd navcoin-core
 make -j3
 
 # checkinstall to generate dpkg
-checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires nginx,build-essential,libcurl4-openssl-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp
+checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires libcurl4-openssl-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp --include=checkinstall_files
 
 # clean up
 make clean
