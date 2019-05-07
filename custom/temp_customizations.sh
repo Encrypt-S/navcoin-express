@@ -88,6 +88,7 @@ apt -y autoremove
 # install npm packages
 npm install pm2 -g
 npm install forever -g
+npm install @angular/cli -g
 
 # set vim as default editor
 update-alternatives --set editor /usr/bin/vim.basic
