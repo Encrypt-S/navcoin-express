@@ -41,7 +41,11 @@ apt -y dist-upgrade
 apt -y autoremove
 
 PKGLIST="build-essential\
-	libcurl4-openssl-dev\
+	libcurl-openssl1.0-dev\
+	nodejs-dev\
+	node-gyp\
+	libssl1.0-dev\
+	libcurl3\
 	libtool\
 	autotools-dev\
 	automake\
