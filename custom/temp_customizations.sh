@@ -4,11 +4,18 @@
 ##
 
 ## VERSION determines the deb package build version identifier and should be updated to match the desired release
-VERSION="4.5.2"
+VERSION="4.6.0"
 ## DEBUG set to yes|no. yes configures bootstrap to download from specified URL
 DEBUG="no"
 ## Bootstrap URL
-BURL='https://192.168.0.10/bootstrap-navcoin_mainnet.tar'
+if [ DEBUG = yes ]; then
+	# local boostrap
+	BOOTSTRAP='--no-check-certificate https://192.168.0.10/bootstrap-navcoin_mainnet.tar'
+else
+	# remote bootstrap
+	BOOTSTRAP='https://s3.amazonaws.com/navcoin-bootstrap/bootstrap-navcoin_mainnet.tar'
+fi
+
 
 
 # set timezone to UTC
@@ -125,13 +132,7 @@ make clean
 
 # bootstrap
 cd /tmp
-if [ DEBUG = yes ]; then
-	# local boostrap
-	wget --no-check-certificate $BURL
-else
-	# remote bootstrap
-	wget https://s3.amazonaws.com/navcoin-bootstrap/bootstrap-navcoin_mainnet.tar
-fi
+wget $BOOTSTRAP
 
 mkdir /home/odroid/.navcoin4 && chown odroid:odroid /home/odroid/.navcoin4
 tar -C /home/odroid/.navcoin4/ -xf bootstrap-navcoin_mainnet.tar && rm -f bootstrap_navcoin_mainnet.tar
