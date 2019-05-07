@@ -25,7 +25,7 @@ timedatectl set-timezone UTC
 useradd -m -G sudo,nopasswdlogin,ssh,users -p Om16ojfOaLNA6 -s /bin/bash odroid
 
 # sudoers
-echo "Cmnd_Alias NAV_CMDS = /sbin/reboot -f, /sbin/shutdown, /bin/systemctl start navcoin, /bin/systemctl stop navcoin, /bin/systemctl restart navcoin, /bin/systemctl start navcoin-core, /bin/systemctl stop navcoin-core, /bin/systemctl restart navcoin-core, /bin/systemctl start navcoin-angular, /bin/systemctl stop navcoin-angular, /bin/systemctl restart navcoin-angular, /bin/systemctl start navcoin-express, /bin/systemctl stop navcoin-express, /bin/systemctl restart navcoin-express, /bin/systemctl start navdroid, /bin/systemctl stop navdroid, /bin/systemctl restart navdroid" >> /etc/sudoers
+echo "Cmnd_Alias NAV_CMDS = /sbin/reboot -f, /sbin/shutdown now, /bin/systemctl start navcoin, /bin/systemctl stop navcoin, /bin/systemctl restart navcoin, /bin/systemctl start navcoin-core, /bin/systemctl stop navcoin-core, /bin/systemctl restart navcoin-core, /bin/systemctl start navcoin-angular, /bin/systemctl stop navcoin-angular, /bin/systemctl restart navcoin-angular, /bin/systemctl start navcoin-express, /bin/systemctl stop navcoin-express, /bin/systemctl restart navcoin-express, /bin/systemctl start navdroid, /bin/systemctl stop navdroid, /bin/systemctl restart navdroid" >> /etc/sudoers
 echo "odroid ALL=NOPASSWD: NAV_CMDS" >> /etc/sudoers
 
 # create odroid cron
