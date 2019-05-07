@@ -1,12 +1,15 @@
 #!/bin/bash
 
-installed=$(find /home/odroid/navdroid -type d -maxdepth 1 -name 'navcoin-*')
-installed="${installed:30}"
+sudo /bin/systemctl stop navcoin
 
-/home/odroid/navdroid/navcoin-${installed}/bin/navcoin-cli stop
+echo "sleeping for 30s..."
+echo
+sleep 30s
 
-sleep 5s
+sudo /usr/local/bin/navcoind -zapwallettxes=1 &
 
-/home/odroid/navdroid/navcoin-${installed}/bin/navcoind -zapwallettxes=1 &
+echo "DONE"
+echo
+
 
 exit 0
