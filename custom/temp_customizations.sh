@@ -68,7 +68,6 @@ PKGLIST="build-essential\
 	vim\
 	openssh-server\
 	ufw\
-	libssl1.0-dev\
 	nodejs\
 	nodejs-dev\
 	node-gyp\
@@ -80,6 +79,7 @@ PKGLIST="build-essential\
 # install packages
 apt -y install $PKGLIST
 apt -y --fix-broken install
+apt -y autoremove
 
 # install npm packages
 npm install pm2 -g
