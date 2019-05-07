@@ -77,7 +77,9 @@ PKGLIST="build-essential\
 	node-gyp\
 	curl\
 	dh-make\
+	pkg-config\
 	bzr-builddeb\
+	ng-common\
 	npm"
 
 # install packages
@@ -92,6 +94,18 @@ hash -d npm
 npm install pm2 -g
 npm install forever -g
 npm install @angular/cli -g
+npm install typescript@3.2 -g
+npm install @angular/compiler-cli -g
+npm install @angular/compiler -g
+npm install @angular-devkit/build-angular -g
+npm install rxjs -g
+npm install @angular/animations -g
+npm install @angular/common -g
+npm install @angular/forms -g
+npm install @angular/platform-browser -g
+npm install @angular/platform-browser-dynamic -g
+npm install zone.js@0.8.26 -g
+npm install @angular/core -g
 
 # set vim as default editor
 update-alternatives --set editor /usr/bin/vim.basic
