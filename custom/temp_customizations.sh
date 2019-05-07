@@ -85,13 +85,13 @@ apt -y install $PKGLIST
 apt -y --fix-broken install
 apt -y autoremove
 
+# update npm 3.x to 5.x
+npm install npm -g
+hash -d npm
 # install npm packages
 npm install pm2 -g
 npm install forever -g
 npm install @angular/cli -g
-# update npm 3.x to 5.x
-npm install npm -g
-hash -d npm
 
 # set vim as default editor
 update-alternatives --set editor /usr/bin/vim.basic
