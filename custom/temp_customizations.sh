@@ -73,6 +73,8 @@ PKGLIST="build-essential\
 	nodejs-dev\
 	node-gyp\
 	curl\
+	dh-make\
+	bzr-builddeb\
 	npm"
 
 # install packages
