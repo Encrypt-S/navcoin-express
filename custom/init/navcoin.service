@@ -1,0 +1,20 @@
+[Unit]
+Description=navcoin
+After=network.target
+After=network-online.target
+After=time-sync.target
+
+[Service]
+User=odroid
+Type=simple
+WorkingDirectory=/home/odroid/
+ExecStart=/usr/local/bin/navcoind
+#ExecStop=/usr/local/bin/navcoin-cli stop
+ExecStop=/bin/kill $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+#Restart=on-failure
+#RestartSec=15
+TimeoutStopSec=300
+
+[Install]
+WantedBy=multi-user.target

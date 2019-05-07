@@ -41,7 +41,7 @@ apt -y dist-upgrade
 apt -y autoremove
 
 PKGLIST="build-essential\
-       	libcurl3-dev\
+	libcurl4-openssl-dev\
 	libtool\
 	autotools-dev\
 	automake\
@@ -125,7 +125,7 @@ cd navcoin-core
 make -j3
 
 # checkinstall to generate dpkg
-checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires nginx,build-essential,libcurl3-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp
+checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires nginx,build-essential,libcurl4-openssl-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp
 
 # clean up
 make clean
