@@ -146,7 +146,7 @@ git clone https://github.com/navcoin/navcoin-core.git
 cd navcoin-core
 ./autogen.sh
 ./configure CFLAGS="-O2 -mtune=cortex-a15.cortex-a7 -mfpu=neon" CXXFLAGS="-O2 -mtune=cortex-a15.cortex-a7 -mfpu=neon" --enable-hardening --without-gui
-make -j3
+make -j4
 
 # checkinstall to generate dpkg
 checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires libcurl4-openssl-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp --include=navdroid_files
