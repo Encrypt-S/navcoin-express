@@ -56,7 +56,8 @@ PKGLIST="build-essential\
 	libqrencode-dev\
 	libboost-all-dev\
 	libminiupnpc-dev\
-	synaptic htop\
+	synaptic\
+	htop\
 	libunbound-dev\
 	libzmq3-dev\
 	zram-config\
