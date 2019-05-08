@@ -8,7 +8,7 @@ VERSION="4.6.0"
 ## DEBUG set to yes|no. yes configures bootstrap to download from specified URL
 DEBUG="no"
 ## Bootstrap URL
-if [ DEBUG = yes ]; then
+if [ $DEBUG = yes ]; then
 	# local boostrap
 	BOOTSTRAP='--no-check-certificate https://192.168.0.10/bootstrap-navcoin_mainnet.tar'
 else
