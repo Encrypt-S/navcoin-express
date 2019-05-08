@@ -41,45 +41,38 @@ DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -yq
 apt -y autoremove
 
 PKGLIST="build-essential\
-	libcurl-openssl1.0-dev\
-	libssl1.0-dev\
-	libcurl3\
-	libtool\
-	autotools-dev\
-	automake\
-	pkg-config\
-	libssl-dev\
-	libevent-dev\
-	bsdmainutils\
-	libqrencode-dev\
-	libboost-all-dev\
-	libminiupnpc-dev\
-	synaptic\
-	htop\
-	libunbound-dev\
-	libzmq3-dev\
-	zram-config\
-	git\
-	libdb4.8-dev\
-	libdb4.8++-dev\
-	ntp\
-	ntpdate\
-	sysstat\
-	screen\
-	checkinstall\
-	nginx\
-	vim\
-	openssh-server\
-	ufw\
-	nodejs\
-	nodejs-dev\
-	node-gyp\
-	curl\
-	dh-make\
-	pkg-config\
-	bzr-builddeb\
-	ng-common\
-	npm"
+        libcurl4-openssl-dev\
+        libtool\
+        autotools-dev\
+        automake\
+        pkg-config\
+        libevent-dev\
+        bsdmainutils\
+        libqrencode-dev\
+        libboost-all-dev\
+        libminiupnpc-dev\
+        synaptic\
+        htop\
+        libunbound-dev\
+        libzmq3-dev\
+        zram-config\
+        git\
+        libdb4.8-dev\
+        libdb4.8++-dev\
+        ntp\
+        ntpdate\
+        sysstat\
+        screen\
+        checkinstall\
+        nginx\
+        apache2\
+        vim\
+        openssh-server\
+        ufw\
+        curl\
+        dh-make\
+        pkg-config\
+        bzr-builddeb"
 
 # install packages
 apt -y install $PKGLIST
@@ -87,24 +80,24 @@ apt -y --fix-broken install
 apt -y autoremove
 
 # update npm 3.x to 5.x
-npm install npm -g
-hash -d npm
+#npm install npm -g
+#hash -d npm
 # install npm packages
-npm install pm2 -g
-npm install forever -g
-npm install @angular/cli -g
-npm install typescript@3.2 -g
-npm install @angular/compiler-cli -g
-npm install @angular/compiler -g
-npm install @angular-devkit/build-angular -g
-npm install rxjs -g
-npm install @angular/animations -g
-npm install @angular/common -g
-npm install @angular/forms -g
-npm install @angular/platform-browser -g
-npm install @angular/platform-browser-dynamic -g
-npm install zone.js@0.8.26 -g
-npm install @angular/core -g
+#npm install pm2 -g
+#npm install forever -g
+#npm install @angular/cli -g
+#npm install typescript@3.2 -g
+#npm install @angular/compiler-cli -g
+#npm install @angular/compiler -g
+#npm install @angular-devkit/build-angular -g
+#npm install rxjs -g
+#npm install @angular/animations -g
+#npm install @angular/common -g
+#npm install @angular/forms -g
+#npm install @angular/platform-browser -g
+#npm install @angular/platform-browser-dynamic -g
+#npm install zone.js@0.8.26 -g
+#npm install @angular/core -g
 
 # set vim as default editor
 update-alternatives --set editor /usr/bin/vim.basic
@@ -145,7 +138,7 @@ git clone https://github.com/navcoin/navcoin-core.git
 cd navcoin-core
 ./autogen.sh
 ./configure CFLAGS="-O2 -mtune=cortex-a15.cortex-a7 -mfpu=neon" CXXFLAGS="-O2 -mtune=cortex-a15.cortex-a7 -mfpu=neon" --enable-hardening --without-gui
-make -j4
+make -j3
 
 # checkinstall to generate dpkg
 checkinstall -D -y --maintainer "info@navcoin.org" --pkgname navcoin-core --pkgversion $VERSION --requires libcurl4-openssl-dev,libtool,autotools-dev,automake,pkg-config,zram-config,git,ntp --include=navdroid_files
