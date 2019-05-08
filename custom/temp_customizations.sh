@@ -115,7 +115,7 @@ service ntp stop && ntpdate -u time.google.com
 service ntp start
 
 # enable ssh
-update-rc.d ssh enable
+systemctl enable ssh
 
 # configure ufw firewall
 ufw allow ssh
