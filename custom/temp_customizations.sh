@@ -36,8 +36,8 @@ add-apt-repository -y ppa:bitcoin/bitcoin
 
 # update apt
 apt -y update
-apt -y upgrade
-apt -y dist-upgrade
+DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq
+DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -yq
 apt -y autoremove
 
 PKGLIST="build-essential\
