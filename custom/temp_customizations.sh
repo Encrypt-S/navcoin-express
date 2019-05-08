@@ -111,7 +111,7 @@ npm install @angular/core -g
 update-alternatives --set editor /usr/bin/vim.basic
 
 # fix date/time with ntpdate
-service ntp stop && ntpdate -u time.google.com
+service ntp stop && sleep 5 && ntpdate -u time.google.com
 service ntp start
 
 # enable ssh
