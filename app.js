@@ -29,9 +29,9 @@ pem.createCertificate({ days: 1, selfSigned: true }, function(err, keys) {
 
   const httpsServer = https.createServer(ssl, app);
 
-  var port = config.ssl.port == 443 ? '' : ':' + config.ssl.port;
+  var port = config.ssl.port;
 
-  httpsServer.listen(443, err => {
+  httpsServer.listen(port, err => {
     console.log(`HTTPS Server running on port ${config.ssl.port}`);
     if (err) console.log(`Error: ${err}`);
     setupServer();
@@ -45,7 +45,7 @@ function setupServer() {
       next();
     } else {
       console.log('redirected');
-      var port = config.ssl.port == 443 ? '' : ':' + config.ssl.port;
+      var port = config.ssl.port;
       var hostname = req.headers.host.split(':')[0];
       var host = hostname + port;
       res.redirect('https://' + host + req.url);
