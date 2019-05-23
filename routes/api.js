@@ -145,7 +145,6 @@ const RPC_COMMANDS = [
 
 const settings = config.get('client');
 
-console.log(settings);
 const navClient = new Client({
   username: settings.navCoin.user,
   password: settings.navCoin.pass,
@@ -185,13 +184,11 @@ router.use(function(req, res, next) {
             type: 'ERROR',
             code: 'JWT_002',
             message: 'Invalid Token',
-            data: req.body
           };
           res.send(JSON.stringify(response));
           return;
         }
         // if everything is good, save to request for use in other routes
-        console.log('TOKEN AUTHENTICATED');
         next();
         return;
       });
@@ -201,7 +198,6 @@ router.use(function(req, res, next) {
       type: 'ERROR',
       code: 'JWT_002',
       message: 'No Token Provided',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -223,7 +219,6 @@ router.post('/auth', function(req, res, next) {
       type: 'ERROR',
       code: 'AUTH_001',
       message: 'Invalid Request',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -237,7 +232,6 @@ router.post('/auth', function(req, res, next) {
       type: 'ERROR',
       code: 'AUTH_002',
       message: 'Invalid Username or Password',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -256,7 +250,6 @@ router.post('/auth', function(req, res, next) {
     type: 'SUCCESS',
     code: 'AUTH_002',
     message: 'Successful Login',
-    data: data,
     token: token
   };
 
@@ -265,11 +258,6 @@ router.post('/auth', function(req, res, next) {
 });
 
 router.post('/rpc', function(req, res, next) {
-  console.log(
-    `${req.body.method} rpc method called with arguments: ${
-      req.body.parameters
-    }`
-  );
   //check if command on allowed list
   if (
     !req.body ||
@@ -280,7 +268,6 @@ router.post('/rpc', function(req, res, next) {
       type: 'ERROR',
       code: 'RPC_001',
       message: 'Invalid Request',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -326,14 +313,12 @@ router.post('/rpc/batch', (req, res, next) => {
       type: 'ERROR',
       code: 'RPC_004',
       message: 'Invalid Request',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
   }
 
   let batchCommands = req.body;
-  console.log('batch commands:', batchCommands);
   navClient
     .command(batchCommands)
     .then(responses => {
@@ -371,14 +356,12 @@ router.post('/generate-main-address', function(req, res, next) {
     .command('getnewaddress')
     .then(data => {
       const addressJson = JSON.stringify({ address: data });
-      console.log(data);
       fs.writeFile('./config/address.json', addressJson, 'utf8', function(err) {
         if (err) {
           const response = {
             type: 'ERROR',
             code: 'GENADR_002',
             message: 'Failed to write to disk',
-            data: req.body
           };
           res.send(JSON.stringify(response));
           return;
@@ -462,7 +445,6 @@ router.post('/get-wallet-config', (req, res, next) => {
         type: 'ERROR',
         code: 'GET_WALLET_CFG_002',
         message: 'Failed to read wallet config file from disk',
-        data: req.body
       };
       res.send(JSON.stringify(response));
       return;
@@ -486,7 +468,6 @@ router.post('/update-wallet-config', (req, res, next) => {
       type: 'ERROR',
       code: 'UPDATE_WALLET_CFG_002',
       message: 'Invalid Args',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -498,7 +479,6 @@ router.post('/update-wallet-config', (req, res, next) => {
         type: 'ERROR',
         code: 'UPDATE_WALLET_CFG_004',
         message: 'Failed to write config to disk',
-        data: req.body
       };
       res.send(JSON.stringify(response));
       return;
@@ -528,7 +508,6 @@ router.post('/ui-password', function(req, res, next) {
       type: 'ERROR',
       code: 'UIPASS_001',
       message: 'Invalid Args',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -540,7 +519,6 @@ router.post('/ui-password', function(req, res, next) {
         type: 'ERROR',
         code: 'UIPASS_002',
         message: 'Failed to read auth file from disk',
-        data: req.body
       };
       res.send(JSON.stringify(response));
       return;
@@ -555,7 +533,6 @@ router.post('/ui-password', function(req, res, next) {
         type: 'ERROR',
         code: 'AUTH_002',
         message: 'Invalid Username or Password',
-        data: req.body
       };
       res.send(JSON.stringify(response));
       return;
@@ -574,7 +551,6 @@ router.post('/ui-password', function(req, res, next) {
             type: 'ERROR',
             code: 'UIPASS_003',
             message: 'Failed to write to disk',
-            data: req.body
           };
           res.send(JSON.stringify(response));
           return;

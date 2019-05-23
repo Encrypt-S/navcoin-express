@@ -7,7 +7,6 @@ function getMainAddress(req, res, navClient) {
         type: 'ERROR',
         code: 'ADR_002',
         message: 'Failed to read address file from disk',
-        data: req.body
       };
       res.send(JSON.stringify(response));
       return;

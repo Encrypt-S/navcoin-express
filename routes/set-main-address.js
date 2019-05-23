@@ -6,7 +6,6 @@ function setMainAddress(req, res, navClient) {
       type: 'ERROR',
       code: 'SETADR_001',
       message: 'Invalid Args',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -28,8 +27,6 @@ function setMainAddress(req, res, navClient) {
       }
 
       const addressObject = { address: newAddress };
-      console.log(addressObject);
-      console.log({ address: newAddress });
       fs.writeFile(
         './config/address.json',
         JSON.stringify(addressObject),
@@ -40,7 +37,6 @@ function setMainAddress(req, res, navClient) {
               type: 'ERROR',
               code: 'SETADR_004',
               message: 'Failed to write to disk',
-              data: req.body
             };
             res.send(JSON.stringify(response));
             return;

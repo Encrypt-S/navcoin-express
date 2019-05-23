@@ -38,7 +38,6 @@ router.use(function(req, res, next) {
           type: 'ERROR',
           code: 'JWT_001',
           message: 'Failed to read auth file from disk',
-          data: req.body
         };
         res.send(JSON.stringify(response));
         return;
@@ -52,13 +51,11 @@ router.use(function(req, res, next) {
             type: 'ERROR',
             code: 'JWT_002',
             message: 'Invalid Token',
-            data: req.body
           };
           res.send(JSON.stringify(response));
           return;
         }
         // if everything is good, save to request for use in other routes
-        console.log('TOKEN AUTHENTICATED');
         next();
         return;
       });
@@ -68,7 +65,6 @@ router.use(function(req, res, next) {
       type: 'ERROR',
       code: 'JWT_002',
       message: 'No Token Provided',
-      data: req.body
     };
     res.send(JSON.stringify(response));
     return;
@@ -463,8 +459,6 @@ router.post('/import-wallet', (req, res, next) => {
 
     try {
       var responded = false;
-
-      console.log('files.fileKey.path', files.fileKey.path);
 
       const command = spawn('/home/odroid/navdroid/express/scripts/import.sh', [files.fileKey.path]);
 
